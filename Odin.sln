@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdinSdk", "OdinSdk\OdinSdk.csproj", "{64FB84D3-2AB1-41AA-93F4-E0E56DB1FC0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdinSdk.Tests", "OdinSdk.Tests\OdinSdk.Tests.csproj", "{59D2477F-FCF7-4EDB-8C65-01A12D50E9C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64FB84D3-2AB1-41AA-93F4-E0E56DB1FC0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64FB84D3-2AB1-41AA-93F4-E0E56DB1FC0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64FB84D3-2AB1-41AA-93F4-E0E56DB1FC0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64FB84D3-2AB1-41AA-93F4-E0E56DB1FC0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59D2477F-FCF7-4EDB-8C65-01A12D50E9C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D2477F-FCF7-4EDB-8C65-01A12D50E9C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D2477F-FCF7-4EDB-8C65-01A12D50E9C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D2477F-FCF7-4EDB-8C65-01A12D50E9C4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
