@@ -1,4 +1,6 @@
-﻿namespace OdinSdk.Components;
+﻿using Odin.Abstractions.Components;
+
+namespace OdinSdk.Components;
 
 public interface IEntityRepository : IReadOnlyEntityRepository
 {
