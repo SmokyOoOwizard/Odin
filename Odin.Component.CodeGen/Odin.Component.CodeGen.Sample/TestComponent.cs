@@ -8,6 +8,12 @@ public struct TestComponent : IComponent
 {
     public int TestField { get; set; }
 
+    public int CustomSetterGetter
+    {
+        get => TestField2;
+        set => TestField2 = value;
+    }
+
     [IndexBy]
     public Int32 TestField2;
 
