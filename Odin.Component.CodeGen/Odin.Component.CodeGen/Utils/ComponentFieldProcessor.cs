@@ -9,7 +9,7 @@ namespace Odin.Component.CodeGen.Utils;
 
 public static class ComponentFieldProcessor
 {
-    public static IEnumerable<string> GetFieldDeclarations( ImmutableArray<ISymbol> componentFields)
+    public static IEnumerable<string> GetFieldDeclarations(ImmutableArray<ISymbol> componentFields)
     {
         var processedMembers = componentFields
                               .Select(w => w as IFieldSymbol)
@@ -37,20 +37,20 @@ public static class ComponentFieldProcessor
                                        {
                                            var listName = typeof(List<>).FullName?.Replace("`1", "<T>");
 
-                                           var d = namedType.OriginalDefinition.ToDisplayString();
+                                           var definition = namedType.OriginalDefinition.ToDisplayString();
 
-                                           if (d == listName)
+                                           if (definition == listName)
                                            {
                                                collectionType = CollectionType.Array;
                                                fieldType = namedType.TypeArguments.First().GetFieldType();
                                            }
                                            else if (type.TypeKind == TypeKind.Struct)
-                                           {
-                                               fieldType = FieldType.Complex;
-                                           }
+                                               return null;
                                            else
                                                return null;
                                        }
+                                       else
+                                           return null;
                                    }
 
                                    var fieldDeclaration = new[]
