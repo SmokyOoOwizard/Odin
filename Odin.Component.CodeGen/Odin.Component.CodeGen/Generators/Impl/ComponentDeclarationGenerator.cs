@@ -72,7 +72,7 @@ public class ComponentDeclarations : AComponentDeclarations
 {{
     protected override void Configure()
     {{
-{string.Join("\n", methodBody)}
+{string.Join("\n\n", methodBody)}
     }}
 }}
 ";
