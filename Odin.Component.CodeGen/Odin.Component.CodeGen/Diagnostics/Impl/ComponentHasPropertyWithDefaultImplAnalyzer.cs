@@ -29,7 +29,7 @@ public class ComponentHasPropertyWithDefaultImplAnalyzer : AComponentPropsAndFie
     {
         var declaration = context.Node.ToFullString();
 
-        if (declaration.Contains("=>") || declaration.Contains("value") || declaration.Contains("return"))
+        if (!declaration.Contains("get;") && !declaration.Contains("set;"))
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
