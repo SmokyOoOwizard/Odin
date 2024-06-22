@@ -9,7 +9,7 @@ namespace Odin.Component.CodeGen.Utils;
 
 public static class ComponentFieldProcessor
 {
-    public static IEnumerable<string> GetFieldDeclarations(ImmutableArray<ISymbol> componentFields)
+    public static IEnumerable<ComponentFieldDeclaration> GetFieldDeclarations(ImmutableArray<ISymbol> componentFields)
     {
         var processedMembers = componentFields
                               .Select(w => w as IFieldSymbol)
@@ -33,33 +33,41 @@ public static class ComponentFieldProcessor
                                            collectionType = ECollectionType.Array;
                                            fieldType = arrayType.ElementType.GetFieldType();
                                        }
-                                       else if (type is INamedTypeSymbol namedType)
-                                       {
-                                           var listName = typeof(List<>).FullName?.Replace("`1", "<T>");
-
-                                           var definition = namedType.OriginalDefinition.ToDisplayString();
-
-                                           if (definition == listName)
-                                           {
-                                               collectionType = ECollectionType.Array;
-                                               fieldType = namedType.TypeArguments.First().GetFieldType();
-                                           }
-                                           else if (type.TypeKind == TypeKind.Struct)
-                                               return null;
-                                           else
-                                               return null;
-                                       }
                                        else
                                            return null;
                                    }
 
+                                   if (!fieldType.HasValue)
+                                       return null;
+
+                                   ComponentFieldDeclaration? result = new ComponentFieldDeclaration
+                                   {
+                                       Name = w.Name,
+                                       CollectionType = collectionType,
+                                       IsIndex = isIndex,
+                                       Type = fieldType.Value,
+                                   };
+
+                                   return result;
+                               })
+                              .Where(str => str.HasValue)
+                              .Select(str => str!.Value);
+
+        return processedMembers;
+    }
+
+    public static IEnumerable<string> GetCodeFieldDeclarations(ImmutableArray<ISymbol> componentFields)
+    {
+        var processedMembers = GetFieldDeclarations(componentFields)
+                              .Select(w =>
+                               {
                                    var fieldDeclaration = new[]
                                    {
                                        $".AddField(\"{w.Name}\")",
-                                       isIndex ? ".Index()" : "",
-                                       $".Type({nameof(EFieldType)}.{fieldType})",
-                                       collectionType != ECollectionType.None
-                                           ? $".Collection({nameof(ECollectionType)}.{collectionType})"
+                                       w.IsIndex ? ".Index()" : "",
+                                       $".Type({nameof(EFieldType)}.{w.Type})",
+                                       w.CollectionType != ECollectionType.None
+                                           ? $".Collection({nameof(ECollectionType)}.{w.CollectionType})"
                                            : "",
                                    }.Where(str => !string.IsNullOrWhiteSpace(str));
 

@@ -36,7 +36,7 @@ public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
 
                              var members = s.GetMembers();
 
-                             var processedMembers = ComponentFieldProcessor.GetFieldDeclarations(members);
+                             var processedMembers = ComponentFieldProcessor.GetCodeFieldDeclarations(members);
 
                              return $"""
                                              Component<{fullName}>()
