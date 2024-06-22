@@ -21,7 +21,7 @@ public abstract class AComponentPropsAndFieldsDiagnosticAnalyzer : DiagnosticAna
 
     private void AnalyzeAction(SyntaxNodeAnalysisContext context)
     {
-        var memberSymbol = context.SemanticModel.GetDeclaredSymbol(context.Node);
+        var memberSymbol = context.ContainingSymbol;
         if (memberSymbol == null)
             return;
 
