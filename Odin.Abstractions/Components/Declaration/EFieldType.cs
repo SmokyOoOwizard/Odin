@@ -1,7 +1,7 @@
 ﻿namespace Odin.Abstractions.Components.Declaration;
 
 [Flags]
-public enum FieldType : ushort
+public enum EFieldType : ushort
 {
     String = 0,
     Int = 0b_0001_0000,

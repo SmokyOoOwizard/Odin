@@ -1,6 +1,6 @@
 ﻿namespace Odin.Abstractions.Components.Declaration;
 
-public enum CollectionType : byte
+public enum ECollectionType : byte
 {
     None = 0,
     Array,

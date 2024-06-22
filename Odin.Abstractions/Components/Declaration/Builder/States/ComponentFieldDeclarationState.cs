@@ -5,7 +5,7 @@ public struct ComponentFieldDeclarationState : IComponentBuilderState
     public string Name { get; set; }
     public CollectionType CollectionType { get; set; }
     public bool IsIndex { get; set; }
-    public FieldType FieldType { get; set; }
+    public EFieldType FieldType { get; set; }
 
     public ComponentDeclaration Add<T>(ComponentDeclaration declaration) where T : IComponent
     {

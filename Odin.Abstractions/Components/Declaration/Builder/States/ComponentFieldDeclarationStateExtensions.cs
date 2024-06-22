@@ -31,7 +31,7 @@ public static class ComponentFieldDeclarationStateExtensions
 
     public static ComponentBuilder<T, ComponentFieldDeclarationState> Collection<T>(
         this ComponentBuilder<T, ComponentFieldDeclarationState> builder,
-        CollectionType type
+        ECollectionType type
     ) where T : IComponent
     {
         builder.CompleteState();
@@ -45,7 +45,7 @@ public static class ComponentFieldDeclarationStateExtensions
 
     public static ComponentBuilder<T, ComponentFieldDeclarationState> Type<T>(
         this ComponentBuilder<T, ComponentFieldDeclarationState> builder,
-        FieldType type
+        EFieldType type
     ) where T : IComponent
     {
         builder.CompleteState();
