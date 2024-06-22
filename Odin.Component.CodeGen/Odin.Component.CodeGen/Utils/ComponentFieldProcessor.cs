@@ -24,13 +24,13 @@ public static class ComponentFieldProcessor
 
                                    var type = w.Type;
                                    var fieldType = type.GetFieldType();
-                                   CollectionType collectionType = CollectionType.None;
+                                   var collectionType = ECollectionType.None;
 
                                    if (!fieldType.HasValue)
                                    {
                                        if (type is IArrayTypeSymbol arrayType)
                                        {
-                                           collectionType = CollectionType.Array;
+                                           collectionType = ECollectionType.Array;
                                            fieldType = arrayType.ElementType.GetFieldType();
                                        }
                                        else if (type is INamedTypeSymbol namedType)
@@ -41,7 +41,7 @@ public static class ComponentFieldProcessor
 
                                            if (definition == listName)
                                            {
-                                               collectionType = CollectionType.Array;
+                                               collectionType = ECollectionType.Array;
                                                fieldType = namedType.TypeArguments.First().GetFieldType();
                                            }
                                            else if (type.TypeKind == TypeKind.Struct)
@@ -57,9 +57,9 @@ public static class ComponentFieldProcessor
                                    {
                                        $".AddField(\"{w.Name}\")",
                                        isIndex ? ".Index()" : "",
-                                       $".Type(FieldType.{fieldType})",
-                                       collectionType != CollectionType.None
-                                           ? $".Collection(CollectionType.{collectionType})"
+                                       $".Type({nameof(EFieldType)}.{fieldType})",
+                                       collectionType != ECollectionType.None
+                                           ? $".Collection({nameof(ECollectionType)}.{collectionType})"
                                            : "",
                                    }.Where(str => !string.IsNullOrWhiteSpace(str));
 
