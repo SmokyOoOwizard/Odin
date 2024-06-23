@@ -30,6 +30,9 @@ public static class ComponentFieldProcessor
                                    {
                                        if (type is IArrayTypeSymbol arrayType)
                                        {
+                                           if (arrayType.Rank > 1)
+                                               return null;
+                                           
                                            collectionType = ECollectionType.Array;
                                            fieldType = arrayType.ElementType.GetFieldType();
                                        }
