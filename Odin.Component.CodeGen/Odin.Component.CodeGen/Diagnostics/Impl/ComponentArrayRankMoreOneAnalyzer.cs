@@ -7,13 +7,13 @@ using Odin.Component.CodeGen.Utils;
 namespace Odin.Component.CodeGen.Diagnostics.Impl;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
+public class ComponentArrayRankMoreOneAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
 {
-    private const string DIAGNOSTIC_ID = "ComponentRules_0003";
+    private const string DIAGNOSTIC_ID = "ComponentRules_0004";
     private const string CATEGORY = "Structure";
 
     private static readonly LocalizableString Message =
-        "A component cannot contain reference fields";
+        "A component cannot contain arrays with rank greater than 1";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,
@@ -34,10 +34,10 @@ public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticA
         var type = typeSymbol.Type;
         var typeKind = type.GetTypedConstantKind();
 
-        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum || type.IsValueType)
+        if (typeKind != TypedConstantKind.Array)
             return;
 
-        if (typeKind == TypedConstantKind.Array)
+        if (typeSymbol.Type is IArrayTypeSymbol { Rank: 1 })
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());

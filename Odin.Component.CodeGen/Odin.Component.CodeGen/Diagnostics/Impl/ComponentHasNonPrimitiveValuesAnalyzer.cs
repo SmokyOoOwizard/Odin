@@ -7,13 +7,13 @@ using Odin.Component.CodeGen.Utils;
 namespace Odin.Component.CodeGen.Diagnostics.Impl;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
+public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
 {
-    private const string DIAGNOSTIC_ID = "ComponentRules_0003";
+    private const string DIAGNOSTIC_ID = "ComponentRules_0005";
     private const string CATEGORY = "Structure";
 
     private static readonly LocalizableString Message =
-        "A component cannot contain reference fields";
+        "A component cannot contain non primitive types";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,
@@ -34,11 +34,20 @@ public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticA
         var type = typeSymbol.Type;
         var typeKind = type.GetTypedConstantKind();
 
-        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum || type.IsValueType)
+        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum)
             return;
 
         if (typeKind == TypedConstantKind.Array)
-            return;
+        {
+            if (typeSymbol.Type is IArrayTypeSymbol array)
+            {
+                var elementType = array.ElementType;
+                var elementTypeKind = elementType.GetTypedConstantKind();
+
+                if (elementTypeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum)
+                    return;
+            }
+        }
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
         context.ReportDiagnostic(diagnostic);
