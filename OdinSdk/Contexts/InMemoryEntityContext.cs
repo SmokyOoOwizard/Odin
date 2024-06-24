@@ -1,7 +1,5 @@
 ﻿using Odin.Abstractions.Contexts;
 using Odin.Abstractions.Contexts.Utils;
-using Odin.Abstractions.Entities;
-using OdinSdk.Components;
 using OdinSdk.Components.Impl;
 
 namespace OdinSdk.Contexts;
@@ -16,7 +14,7 @@ public class InMemoryEntityContext : AEntityContext
         Id = EntityContextUtils.ComputeId(name);
         Name = name;
 
-        IEntityRepository rep = new InMemoryEntitiesChangedComponents();
+        var rep = new InMemoryEntitiesChangedComponents();
         EntityContextsRepository.AddRepository(Id, rep);
     }
 
