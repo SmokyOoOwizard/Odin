@@ -1,4 +1,5 @@
 ﻿using Odin.Abstractions.Contexts;
+using Odin.Abstractions.Contexts.Utils;
 using OdinSdk.Components;
 using OdinSdk.Components.Impl;
 
@@ -6,19 +7,16 @@ namespace OdinSdk.Contexts;
 
 public class InMemoryEntityContext : AEntityContext
 {
-    public override string Name { get; }
-    public override ulong Id => (ulong)Name.GetHashCode();
-
-    private IEntityRepository _repository;
+    public sealed override string Name { get; }
+    public sealed override ulong Id { get; }
 
     public InMemoryEntityContext(string name)
     {
+        Id = EntityContextUtils.ComputeId(name);
         Name = name;
 
         IEntityRepository rep = new InMemoryEntitiesChangedComponents();
         EntityContextsRepository.AddRepository(Id, rep);
-
-        _repository = rep!;
     }
 
     public override void Dispose()
