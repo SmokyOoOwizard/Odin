@@ -41,6 +41,7 @@ public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
                              return $"""
                                              Component<{fullName}>()
                                                  .WithName("{fullName}")
+                                                 .WithId(TypeComponentUtils.GetComponentTypeId<{fullName}>())
                                                  {string.Join("\n\t\t\t", processedMembers)}
                                                  .Build();
                                      """;
@@ -51,6 +52,7 @@ public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
 
 using Odin.Abstractions.Components.Declaration;
 using Odin.Abstractions.Components.Declaration.Builder.States;
+using Odin.Abstractions.Components.Utils;
 
 namespace {namespaceName};
 
