@@ -1,4 +1,5 @@
 ﻿using Odin.Abstractions.Components;
+using Odin.Abstractions.Entities;
 
 namespace OdinSdk.Components.Impl;
 

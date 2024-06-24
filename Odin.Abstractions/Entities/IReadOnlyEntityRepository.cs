@@ -1,6 +1,6 @@
 ﻿using Odin.Abstractions.Components;
 
-namespace OdinSdk.Components;
+namespace Odin.Abstractions.Entities;
 
 public interface IReadOnlyEntityRepository
 {
