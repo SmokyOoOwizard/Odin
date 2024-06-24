@@ -1,4 +1,5 @@
-﻿using OdinSdk.Entities;
+﻿using Odin.Abstractions.Contexts;
+using OdinSdk.Entities;
 
 namespace OdinSdk.Contexts;
 
@@ -11,7 +12,7 @@ public static class EntityContextExtensions
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
-        var id = context.Local.Changes.CreateEntity();
+        var id = context.GetLocal().Changes.CreateEntity();
 
         return new Entity
         {
@@ -27,7 +28,6 @@ public static class EntityContextExtensions
         if (rep == default)
             yield break;
 
-        var changes = context.Local.Changes;
         foreach (var entityId in rep.GetEntities())
         {
             yield return new Entity
@@ -36,5 +36,10 @@ public static class EntityContextExtensions
                 ColdComponents = rep,
             };
         }
+    }
+    
+    internal static EntityContextLocal GetLocal(this AEntityContext context)
+    {
+        return EntityContexts.GetContext(context.Id);
     }
 }
