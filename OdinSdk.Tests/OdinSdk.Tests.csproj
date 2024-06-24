@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Odin.Tests.Abstractions\Odin.Tests.Abstractions.csproj" />
       <ProjectReference Include="..\OdinSdk\OdinSdk.csproj" />
     </ItemGroup>
 

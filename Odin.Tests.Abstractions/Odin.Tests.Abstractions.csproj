@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" />
+      <ProjectReference Include="..\OdinSdk\OdinSdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="xunit.assert" Version="2.5.3" />
+      <PackageReference Include="xunit.extensibility.core" Version="2.5.3" />
+    </ItemGroup>
+
+</Project>

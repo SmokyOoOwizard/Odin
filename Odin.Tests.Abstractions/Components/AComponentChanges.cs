@@ -1,11 +1,17 @@
 ﻿using Odin.Abstractions.Components;
+using Odin.Abstractions.Contexts;
 using OdinSdk.Components;
 using OdinSdk.Contexts;
+using Xunit;
 
-namespace OdinSdk.Tests.Components;
+namespace Odin.Tests.Abstractions.Components;
 
-public class ComponentChanges : TestsWithContext
+public abstract class AComponentChanges : ATestsWithContext
 {
+    protected AComponentChanges(AEntityContext context) : base(context)
+    {
+    }
+    
     private struct TestComponent : IComponent
     {
         public ulong TestData;

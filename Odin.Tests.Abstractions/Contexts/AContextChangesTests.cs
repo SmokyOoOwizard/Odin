@@ -1,10 +1,16 @@
+using Odin.Abstractions.Contexts;
 using OdinSdk.Components;
 using OdinSdk.Contexts;
+using Xunit;
 
-namespace OdinSdk.Tests.Contexts;
+namespace Odin.Tests.Abstractions.Contexts;
 
-public class ContextChanges : TestsWithContext
+public abstract class AContextChangesTests : ATestsWithContext
 {
+    protected AContextChangesTests(AEntityContext context) : base(context)
+    {
+    }
+
     [Fact]
     public void CreateEntity()
     {
@@ -34,7 +40,7 @@ public class ContextChanges : TestsWithContext
         EntityContexts.Save();
 
         var entities = Context.GetEntities().ToArray();
-        
+
         Assert.Empty(entities);
     }
 }

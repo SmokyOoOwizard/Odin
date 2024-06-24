@@ -1,16 +1,16 @@
 ﻿using Odin.Abstractions.Contexts;
 using OdinSdk.Contexts;
 
-namespace OdinSdk.Tests;
+namespace Odin.Tests.Abstractions;
 
-public abstract class TestsWithContext : IDisposable
+public abstract class ATestsWithContext : IDisposable
 {
     protected readonly AEntityContext Context;
 
-    public TestsWithContext()
+    public ATestsWithContext(AEntityContext context)
     {
+        Context = context;
         EntityContexts.Clear();
-        Context = new InMemoryEntityContext(GetType().FullName!);
     }
     
     public void Dispose()
