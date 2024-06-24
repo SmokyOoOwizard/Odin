@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Odin.Abstractions.Components;
 
 namespace Odin.Component.CodeGen.Sample;
@@ -26,14 +25,4 @@ public struct TestComponent : IComponent
     public string TestField6;
 
     public int[] TestArray;
-    public List<int> TestList;
-    public Dictionary<int, int> TestDictionary;
-
-    public TestInterComplexStruct ComplexField;
-}
-
-public struct TestInterComplexStruct
-{
-    public int TestField;
-    public string TestField2;
 }

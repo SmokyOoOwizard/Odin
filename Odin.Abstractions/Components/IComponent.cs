@@ -1,6 +1,5 @@
-﻿namespace Odin.Abstractions.Components
+﻿namespace Odin.Abstractions.Components;
+
+public interface IComponent
 {
-    public interface IComponent
-    {
-    }
 }

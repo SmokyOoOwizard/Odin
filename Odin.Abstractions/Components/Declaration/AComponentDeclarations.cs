@@ -3,7 +3,6 @@ using Odin.Abstractions.Components.Declaration.Builder.States;
 
 namespace Odin.Abstractions.Components.Declaration;
 
-{
 public abstract class AComponentDeclarations<T> where T : AComponentDeclarations<T>, new()
 {
     public static T Instance { get; } = new();
@@ -26,9 +25,9 @@ public abstract class AComponentDeclarations<T> where T : AComponentDeclarations
         throw new System.NotImplementedException();
     }
 
-    protected ComponentBuilder<T, ComponentDeclarationState> Component<T>() where T : IComponent
+    protected ComponentBuilder<TComponent, ComponentDeclarationState> Component<TComponent>() where TComponent : IComponent
     {
-        return new ComponentBuilder<T, ComponentDeclarationState>(AddComponentDescription);
+        return new ComponentBuilder<TComponent, ComponentDeclarationState>(AddComponentDescription);
     }
 
     protected void AddComponentDescription(ComponentDeclaration componentDeclaration)
