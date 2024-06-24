@@ -1,7 +1,6 @@
 ﻿using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
-using OdinSdk.Components.Impl;
 
 namespace OdinSdk.Entities;
 
@@ -169,23 +168,23 @@ public class InMemoryEntityRepository : IEntityRepository
     {
         lock (_components)
         {
-            foreach (var entity in entities)
+            foreach (var (id, changes) in entities)
             {
                 // tmp
-                if (entity.Item2.Any(c => c.TypeId == _destroyedId))
+                if (changes.Any(c => c.TypeId == _destroyedId))
                 {
-                    _components.Remove(entity.Item1);
+                    _components.Remove(id);
                     continue;
                 }
 
 
-                if (!_components.TryGetValue(entity.Item1, out var components))
-                    _components[entity.Item1] = components = new();
+                if (!_components.TryGetValue(id, out var components))
+                    _components[id] = components = new();
 
-                if (!_oldComponents.TryGetValue(entity.Item1, out var oldComponents))
-                    _oldComponents[entity.Item1] = oldComponents = new();
+                if (!_oldComponents.TryGetValue(id, out var oldComponents))
+                    _oldComponents[id] = oldComponents = new();
 
-                foreach (var component in entity.Item2)
+                foreach (var component in changes)
                 {
                     if (components.TryGetValue(component.TypeId, out var oldComponent))
                         oldComponents[component.TypeId] = oldComponent;

@@ -43,4 +43,23 @@ public abstract class AContextChangesTests : ATestsWithContext
 
         Assert.Empty(entities);
     }
+
+    [Fact]
+    public void ClearContext()
+    {
+        Context.CreateEntity();
+        Context.CreateEntity();
+
+        EntityContexts.Save();
+
+        var entities = Context.GetEntities().ToArray();
+
+        Assert.Equal(2, entities.Length);
+
+        Context.Clear();
+        
+        var newEntities = Context.GetEntities().ToArray();
+
+        Assert.Empty(newEntities);
+    }
 }

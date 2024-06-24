@@ -37,9 +37,13 @@ public static class EntityContextExtensions
             };
         }
     }
-    
-    internal static EntityContextLocal GetLocal(this AEntityContext context)
+
+    public static void Clear(this AEntityContext context)
     {
-        return EntityContexts.GetContext(context.Id);
+        var rep = EntityContextsRepository.GetRepository(context.Id);
+        if (rep == default)
+            return;
+
+        rep.Clear();
     }
 }
