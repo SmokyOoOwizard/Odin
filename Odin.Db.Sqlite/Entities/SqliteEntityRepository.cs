@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Odin.Abstractions.Components;
+using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
 using Odin.Db.Sqlite.Utils;
 
@@ -7,6 +8,8 @@ namespace Odin.Db.Sqlite.Entities;
 
 public class SqliteEntityRepository : IEntityRepository
 {
+    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
+
     private readonly SqliteConnection _connection;
 
     public SqliteEntityRepository(SqliteConnection connection)
@@ -31,7 +34,7 @@ public class SqliteEntityRepository : IEntityRepository
         command.CommandText = "SELECT id FROM entities;";
         using var reader = command.ExecuteReader();
 
-        while (reader.Read())
+        while (reader.Read() && reader.GetValue(0) != DBNull.Value)
         {
             yield return reader.GetInt64(0).MapToUlong();
         }
@@ -72,7 +75,9 @@ public class SqliteEntityRepository : IEntityRepository
             {
                 using var command = _connection.CreateCommand();
 
-                command.CommandText = $"UPDATE properties SET value = {lastId.MapToLong()} WHERE name = 'lastEntityId';";
+                command.CommandText =
+                    $"INSERT OR IGNORE INTO properties (name, value) VALUES ('lastEntityId', {lastId.MapToLong()});" +
+                    $" UPDATE properties SET value = {lastId.MapToLong()} WHERE name='lastEntityId';";
                 command.ExecuteNonQuery();
             }
 
@@ -91,7 +96,7 @@ public class SqliteEntityRepository : IEntityRepository
     {
         using var command = _connection.CreateCommand();
 
-        command.CommandText = $"DELETE FROM entities WHERE id = {entityId};";
+        command.CommandText = $"DELETE FROM entities WHERE id = {entityId.MapToLong()};";
         command.ExecuteNonQuery();
 
         // todo delete components;
@@ -99,12 +104,27 @@ public class SqliteEntityRepository : IEntityRepository
 
     public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
     {
-        throw new NotImplementedException();
+        foreach (var (id, components) in entities)
+        {
+            if (components.Any(c => c.TypeId == _destroyedId))
+            {
+                DestroyEntity(id);
+                continue;
+            }
+
+            // todo apply components changes
+        }
     }
 
     public void Apply((ulong, ComponentWrapper[]) entity)
     {
-        throw new NotImplementedException();
+        if (entity.Item2.Any(c => c.TypeId == _destroyedId))
+        {
+            DestroyEntity(entity.Item1);
+            return;
+        }
+
+        // todo apply components changes
     }
 
     public void Clear()
