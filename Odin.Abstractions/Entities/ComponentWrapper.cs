@@ -2,4 +2,4 @@
 
 namespace Odin.Abstractions.Entities;
 
-public record struct ComponentWrapper(int TypeId, IComponent? Component);
+public record struct ComponentWrapper(ulong TypeId, IComponent? Component);

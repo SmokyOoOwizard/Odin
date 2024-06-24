@@ -1,4 +1,5 @@
 ﻿using Odin.Abstractions.Components;
+using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
 
 namespace OdinSdk.Components.Impl;
@@ -8,14 +9,14 @@ public struct Destroyed : IComponent;
 public class InMemoryEntitiesChangedComponents : IEntityRepository
 {
     private ulong _lastId;
-    private readonly Dictionary<ulong, Dictionary<int, IComponent?>> _oldComponents = new();
-    private readonly Dictionary<ulong, Dictionary<int, IComponent?>> _components = new();
+    private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _oldComponents = new();
+    private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _components = new();
 
     public void Replace<T>(ulong entityId, T? component) where T : IComponent
     {
         lock (_components)
         {
-            var componentId = typeof(T).GetHashCode();
+            var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!_components.TryGetValue(entityId, out var components))
                 _components[entityId] = components = new();
             else
@@ -36,7 +37,7 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
     {
         lock (_components)
         {
-            var componentId = typeof(T).GetHashCode();
+            var componentId = TypeComponentUtils.GetComponentTypeId<T>();
 
             if (!_components.TryGetValue(entityId, out var components))
                 _components[entityId] = components = new();
@@ -71,7 +72,8 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
             if (!_components.TryGetValue(entityId, out var components))
                 _components[entityId] = components = new();
 
-            var componentId = typeof(Destroyed).GetHashCode();
+            // todo rewrite this
+            var componentId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
             components[componentId] = default;
         }
     }
@@ -85,7 +87,8 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
             if (!_components.TryGetValue(entityId, out var components))
                 return false;
 
-            var componentId = typeof(T).GetHashCode();
+            // todo use utils for compute id*
+            var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!components.TryGetValue(componentId, out var rawComponent))
                 return false;
 
@@ -106,7 +109,7 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
             if (!_oldComponents.TryGetValue(entityId, out var components))
                 return false;
 
-            var componentId = typeof(T).GetHashCode();
+            var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!components.TryGetValue(componentId, out var rawComponent))
                 return false;
 
@@ -165,8 +168,7 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
     {
         lock (_components)
         {
-            var destroyedId = typeof(Destroyed).GetHashCode();
-
+            var destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
             foreach (var entity in entities)
             {
                 // tmp
@@ -197,7 +199,7 @@ public class InMemoryEntitiesChangedComponents : IEntityRepository
     {
         lock (_components)
         {
-            var destroyedId = typeof(Destroyed).GetHashCode();
+            var destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
 
             if (entity.Item2.Any(c => c.TypeId == destroyedId))
             {
