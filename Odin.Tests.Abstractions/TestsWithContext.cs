@@ -15,6 +15,7 @@ public abstract class ATestsWithContext : IDisposable
     
     public void Dispose()
     {
+        EntityContexts.Clear();
         Context.Dispose();
     }
 }

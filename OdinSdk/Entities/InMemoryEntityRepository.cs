@@ -70,11 +70,8 @@ public class InMemoryEntityRepository : IEntityRepository
     {
         lock (_components)
         {
-            if (!_components.TryGetValue(entityId, out var components))
-                _components[entityId] = components = new();
-
-            // todo rewrite this
-            components[_destroyedId] = default;
+            _components.Remove(entityId);
+            _oldComponents.Remove(entityId);
         }
     }
 
@@ -87,7 +84,6 @@ public class InMemoryEntityRepository : IEntityRepository
             if (!_components.TryGetValue(entityId, out var components))
                 return false;
 
-            // todo use utils for compute id*
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!components.TryGetValue(componentId, out var rawComponent))
                 return false;
@@ -174,6 +170,7 @@ public class InMemoryEntityRepository : IEntityRepository
                 if (changes.Any(c => c.TypeId == _destroyedId))
                 {
                     _components.Remove(id);
+                    _oldComponents.Remove(id);
                     continue;
                 }
 
@@ -201,6 +198,7 @@ public class InMemoryEntityRepository : IEntityRepository
             if (entity.Item2.Any(c => c.TypeId == _destroyedId))
             {
                 _components.Remove(entity.Item1);
+                _oldComponents.Remove(entity.Item1);
                 return;
             }
 

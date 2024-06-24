@@ -3,9 +3,9 @@ using OdinSdk.Contexts;
 
 namespace OdinSdk.Tests.Contexts;
 
-public class InMemoryAContextChangesATests : AContextChangesTests
+public class InMemoryContextChangesATests : AContextChangesTests
 {
-    public InMemoryAContextChangesATests() : base(new InMemoryEntityContext(nameof(InMemoryAContextChangesATests)))
+    public InMemoryContextChangesATests() : base(new InMemoryEntityContext(nameof(InMemoryContextChangesATests)))
     {
     }
 }
