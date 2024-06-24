@@ -1,4 +1,5 @@
 ﻿using Odin.Abstractions.Components;
+using OdinSdk.Components.Impl;
 using OdinSdk.Entities;
 
 namespace OdinSdk.Components;
@@ -44,6 +45,6 @@ public static class EntityComponentsExtensions
 
     public static void Destroy(this Entity entity)
     {
-        entity.HotComponents.DestroyEntity(entity.Id.Id);
+        entity.HotComponents.Replace(entity.Id.Id, default(Destroyed));
     }
 }

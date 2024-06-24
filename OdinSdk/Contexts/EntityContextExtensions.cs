@@ -12,7 +12,7 @@ public static class EntityContextExtensions
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
-        var id = context.GetLocal().Changes.CreateEntity();
+        var id = rep.CreateEntity();
 
         return new Entity
         {

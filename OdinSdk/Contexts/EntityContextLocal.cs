@@ -5,5 +5,5 @@ namespace OdinSdk.Contexts;
 
 public struct EntityContextLocal
 {
-    public IEntityRepository Changes { get; set; }
+    public IEntityComponentsRepository Changes { get; set; }
 }

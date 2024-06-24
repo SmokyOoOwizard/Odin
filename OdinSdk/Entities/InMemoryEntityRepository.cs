@@ -1,14 +1,19 @@
 ﻿using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
+using OdinSdk.Components.Impl;
 
-namespace OdinSdk.Components.Impl;
+namespace OdinSdk.Entities;
 
-public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
+public class InMemoryEntityRepository : IEntityRepository
 {
+    private ulong _lastId;
+    
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _oldComponents = new();
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _components = new();
     
+    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
+
     public void Replace<T>(ulong entityId, T? component) where T : IComponent
     {
         lock (_components)
@@ -51,6 +56,29 @@ public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
             components[componentId] = null;
         }
     }
+
+    public ulong CreateEntity()
+    {
+        lock (_components)
+        {
+            _lastId++;
+            _components[_lastId] = new();
+            return _lastId;
+        }
+    }
+
+    public void DestroyEntity(ulong entityId)
+    {
+        lock (_components)
+        {
+            if (!_components.TryGetValue(entityId, out var components))
+                _components[entityId] = components = new();
+
+            // todo rewrite this
+            components[_destroyedId] = default;
+        }
+    }
+
 
     public bool Get<T>(ulong entityId, out T? component) where T : IComponent
     {
@@ -143,6 +171,14 @@ public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
         {
             foreach (var entity in entities)
             {
+                // tmp
+                if (entity.Item2.Any(c => c.TypeId == _destroyedId))
+                {
+                    _components.Remove(entity.Item1);
+                    continue;
+                }
+
+
                 if (!_components.TryGetValue(entity.Item1, out var components))
                     _components[entity.Item1] = components = new();
 
@@ -163,6 +199,12 @@ public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
     {
         lock (_components)
         {
+            if (entity.Item2.Any(c => c.TypeId == _destroyedId))
+            {
+                _components.Remove(entity.Item1);
+                return;
+            }
+
             if (!_components.TryGetValue(entity.Item1, out var components))
                 _components[entity.Item1] = components = new();
 
