@@ -1,6 +1,6 @@
 ﻿namespace Odin.Abstractions.Components;
 
-public struct Destroyed : IComponent
+public struct DestroyedComponent : IComponent
 {
     
 }

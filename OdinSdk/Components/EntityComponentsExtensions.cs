@@ -45,6 +45,6 @@ public static class EntityComponentsExtensions
 
     public static void Destroy(this Entity entity)
     {
-        entity.HotComponents.Replace(entity.Id.Id, default(Destroyed));
+        entity.HotComponents.Replace(entity.Id.Id, default(DestroyedComponent));
     }
 }

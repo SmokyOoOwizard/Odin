@@ -11,7 +11,7 @@ public class InMemoryEntityRepository : IEntityRepository
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _oldComponents = new();
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _components = new();
     
-    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
+    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
     public void Replace<T>(ulong entityId, T? component) where T : IComponent
     {
