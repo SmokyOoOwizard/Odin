@@ -22,7 +22,7 @@ public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
 
                              var members = s.GetMembers();
 
-                             var processedMembers = ComponentFieldProcessor.GetCodeFieldDeclarations(members);
+                             var processedMembers = ComponentFieldCodeGen.GetCodeFieldDeclarations(members);
 
                              return $"""
                                              Component<{fullName}>()

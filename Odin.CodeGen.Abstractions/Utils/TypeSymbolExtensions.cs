@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Odin.Abstractions.Components.Declaration;
 
-namespace Odin.Component.CodeGen.Utils;
+namespace Odin.CodeGen.Abstractions.Utils;
 
 public static class TypeSymbolExtensions
 {

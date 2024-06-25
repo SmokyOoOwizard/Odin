@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions;
-using Odin.Component.CodeGen.Utils;
+using Odin.CodeGen.Abstractions.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl;
 
@@ -141,7 +141,7 @@ public class {componentName}Serializer : IComponentSerializer<{componentFullName
 
     private static string GetFieldDeserialization(ComponentFieldDeclaration declaration, int offset)
     {
-        var castType = declaration.Type.GetFieldType() +
+        var castType = TypeSymbolExtensions.GetFieldType(declaration.Type) +
                        (declaration.CollectionType == ECollectionType.Array ? "[]" : "");
 
         var result = $"component.{declaration.Name} = ({castType})(serializedComponent.Fields[{offset}].Value)!;";
