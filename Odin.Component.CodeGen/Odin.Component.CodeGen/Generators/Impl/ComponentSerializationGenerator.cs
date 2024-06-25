@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Odin.Abstractions.Components.Declaration;
+using Odin.CodeGen.Abstractions;
 using Odin.Component.CodeGen.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl;
@@ -14,21 +13,12 @@ namespace Odin.Component.CodeGen.Generators.Impl;
 [Generator]
 public class ComponentSerializationGenerator : AComponentIncrementalGenerator
 {
-    protected override void GenerateCode(
-        SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<StructDeclarationSyntax> structDeclarations
-    )
+    protected override void GenerateCode(GeneratorExecutionContext context, IEnumerable<INamedTypeSymbol> components)
     {
-        var namespaceName = compilation.AssemblyName;
+        var namespaceName =context.Compilation.AssemblyName;
 
-        foreach (var structDeclarationSyntax in structDeclarations)
+        foreach (var structSymbol in components)
         {
-            var semanticModel = compilation.GetSemanticModel(structDeclarationSyntax.SyntaxTree);
-
-            if (semanticModel.GetDeclaredSymbol(structDeclarationSyntax) is not INamedTypeSymbol structSymbol)
-                continue;
-
             var componentName = structSymbol.Name;
             var componentFullName = structSymbol.OriginalDefinition.ToDisplayString();
 
@@ -112,7 +102,7 @@ public class {componentName}Serializer : IComponentSerializer<{componentFullName
     private static IEnumerable<string> GetFieldsSerialization(ComponentFieldDeclaration[] fields)
     {
         var offset = 0;
-        
+
         foreach (var field in fields)
         {
             var result = GetFieldSerialization(field, offset);
@@ -136,11 +126,11 @@ public class {componentName}Serializer : IComponentSerializer<{componentFullName
 
         return result;
     }
-    
+
     private static IEnumerable<string> GetFieldsDeserialization(ComponentFieldDeclaration[] fields)
     {
         var offset = 0;
-        
+
         foreach (var field in fields)
         {
             var result = GetFieldDeserialization(field, offset);
@@ -148,11 +138,12 @@ public class {componentName}Serializer : IComponentSerializer<{componentFullName
             yield return result;
         }
     }
-    
+
     private static string GetFieldDeserialization(ComponentFieldDeclaration declaration, int offset)
     {
-        var castType = declaration.Type.GetFieldType() + (declaration.CollectionType == ECollectionType.Array ? "[]" : "");
-        
+        var castType = declaration.Type.GetFieldType() +
+                       (declaration.CollectionType == ECollectionType.Array ? "[]" : "");
+
         var result = $"component.{declaration.Name} = ({castType})(serializedComponent.Fields[{offset}].Value)!;";
 
         return result;

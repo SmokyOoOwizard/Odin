@@ -1,9 +1,9 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Odin.CodeGen.Abstractions;
 using Odin.Component.CodeGen.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl;
@@ -11,25 +11,11 @@ namespace Odin.Component.CodeGen.Generators.Impl;
 [Generator]
 public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
 {
-    protected override void GenerateCode(
-        SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<StructDeclarationSyntax> structDeclarations
-    )
+    protected override void GenerateCode(GeneratorExecutionContext context, IEnumerable<INamedTypeSymbol> components)
     {
-        var namespaceName = compilation.AssemblyName;
+        var namespaceName =context.Compilation.AssemblyName;
 
-        var methodBody = structDeclarations
-                        .Select(sds =>
-                         {
-                             var semanticModel = compilation.GetSemanticModel(sds.SyntaxTree);
-
-                             var symbol = semanticModel.GetDeclaredSymbol(sds);
-
-                             return symbol as INamedTypeSymbol;
-                         })
-                        .Where(s => s != null)
-                        .Select(s => s!)
+        var methodBody = components
                         .Select(s =>
                          {
                              var fullName = s.OriginalDefinition.ToDisplayString();
