@@ -8,7 +8,7 @@ namespace Odin.Db.Sqlite.Entities;
 
 public class SqliteEntityRepository : IEntityRepository
 {
-    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<Destroyed>();
+    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
     private readonly SqliteConnection _connection;
 
@@ -77,14 +77,8 @@ public class SqliteEntityRepository : IEntityRepository
 
                 command.CommandText =
                     $"INSERT OR IGNORE INTO properties (name, value) VALUES ('lastEntityId', {lastId.MapToLong()});" +
-                    $" UPDATE properties SET value = {lastId.MapToLong()} WHERE name='lastEntityId';";
-                command.ExecuteNonQuery();
-            }
-
-            {
-                using var command = _connection.CreateCommand();
-
-                command.CommandText = $"INSERT INTO entities (id) VALUES ({lastId.MapToLong()});";
+                    $"UPDATE properties SET value = {lastId.MapToLong()} WHERE name = 'lastEntityId';" +
+                    $"INSERT INTO entities (id) VALUES ({lastId.MapToLong()});";
                 command.ExecuteNonQuery();
             }
 
