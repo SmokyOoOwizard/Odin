@@ -21,6 +21,9 @@ public static class EntityContextsRepository
     {
         lock (Repositories)
         {
+            if (Repositories.ContainsKey(id))
+                throw new InvalidOperationException("Repository already exists");
+
             Repositories[id] = repository;
         }
     }

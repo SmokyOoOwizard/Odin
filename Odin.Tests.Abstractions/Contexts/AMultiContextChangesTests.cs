@@ -14,6 +14,8 @@ public abstract class AMultiContextChangesTests : IDisposable
     {
         _firstContext = firstContext;
         _secondContext = secondContext;
+
+        EntityContexts.Clear();
     }
 
     [Fact]
@@ -92,6 +94,8 @@ public abstract class AMultiContextChangesTests : IDisposable
 
     public void Dispose()
     {
+        EntityContexts.Clear();
+        
         _firstContext.Dispose();
         _secondContext.Dispose();
     }

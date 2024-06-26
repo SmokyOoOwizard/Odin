@@ -5,13 +5,16 @@ namespace OdinSdk.Contexts;
 
 public static class EntityContexts
 {
-    private static readonly Dictionary<ulong, EntityContextLocal> Contexts = new();
+    private static AsyncLocal<Dictionary<ulong, EntityContextLocal>> Contexts = new();
 
     public static void Clear()
     {
         lock (Contexts)
         {
-            Contexts.Clear();
+            Contexts = new()
+            {
+                Value = new()
+            };
         }
     }
 
@@ -19,8 +22,11 @@ public static class EntityContexts
     {
         lock (Contexts)
         {
-            var val = Contexts.ToArray();
-            Contexts.Clear();
+            var val = Contexts.Value?.ToArray();
+            if (val == null)
+                return;
+
+            Contexts.Value?.Clear();
 
             foreach (var (key, contextLocal) in val)
             {
@@ -35,14 +41,21 @@ public static class EntityContexts
     {
         lock (Contexts)
         {
-            if (!Contexts.TryGetValue(id, out var context))
+            var val = Contexts.Value;
+            if (val == null)
+            {
+                Contexts.Value = new();
+                val = Contexts.Value;
+            }
+            
+            if (!val.TryGetValue(id, out var context))
             {
                 context = new()
                 {
                     Changes = new InMemoryEntitiesChangedComponents()
                 };
 
-                Contexts[id] = context;
+                val[id] = context;
             }
 
             return context;
