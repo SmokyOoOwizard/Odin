@@ -21,7 +21,7 @@ public class SqliteEntityRepository : IEntityRepository
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
-        var serializer = _connection.GetSerializer();
+        var serializer = SqlCommands.GetReader();
         var componentWrapper = serializer.Read(_connection, entityId, typeId);
 
         if (componentWrapper.Component == null)
@@ -38,7 +38,7 @@ public class SqliteEntityRepository : IEntityRepository
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
-        var serializer = _connection.GetSerializer();
+        var serializer = SqlCommands.GetReader();
         var componentWrapper = serializer.Read(_connection, entityId, typeId, true);
 
         if (componentWrapper.Component == null)
@@ -73,35 +73,39 @@ public class SqliteEntityRepository : IEntityRepository
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
-        var serializer = _connection.GetSerializer();
+        var reader = SqlCommands.GetReader();
+        var writer = SqlCommands.GetWriter();
+        var deleter = SqlCommands.GetDeleter();
 
-        var old = serializer.Read(_connection, entityId, typeId);
+        var old = reader.Read(_connection, entityId, typeId);
 
         if (component == null)
-            serializer.Delete(_connection, entityId, typeId);
+            deleter.Delete(_connection, entityId, typeId);
         else
-            serializer.Write(_connection, entityId, new ComponentWrapper(typeId, component));
+            writer.Write(_connection, entityId, new ComponentWrapper(typeId, component));
 
         if (old.Component == null)
-            serializer.Delete(_connection, entityId, typeId, true);
+            deleter.Delete(_connection, entityId, typeId, true);
         else
-            serializer.Write(_connection, entityId, old, true);
+            writer.Write(_connection, entityId, old, true);
     }
 
     public void Remove<T>(ulong entityId) where T : IComponent
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
-        var serializer = _connection.GetSerializer();
+        var reader = SqlCommands.GetReader();
+        var writer = SqlCommands.GetWriter();
+        var deleter = SqlCommands.GetDeleter();
 
-        var old = serializer.Read(_connection, entityId, typeId);
+        var old = reader.Read(_connection, entityId, typeId);
 
-        serializer.Delete(_connection, entityId, typeId);
+        deleter.Delete(_connection, entityId, typeId);
 
         if (old.Component == null)
-            serializer.Delete(_connection, entityId, typeId, true);
+            deleter.Delete(_connection, entityId, typeId, true);
         else
-            serializer.Write(_connection, entityId, old, true);
+            writer.Write(_connection, entityId, old, true);
     }
 
     public ulong CreateEntity()
@@ -147,7 +151,10 @@ public class SqliteEntityRepository : IEntityRepository
 
     public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
     {
-        var serializer = _connection.GetSerializer();
+        var reader = SqlCommands.GetReader();
+        var writer = SqlCommands.GetWriter();
+        var deleter = SqlCommands.GetDeleter();
+
         foreach (var (id, components) in entities)
         {
             if (components.Any(c => c.TypeId == _destroyedId))
@@ -158,17 +165,17 @@ public class SqliteEntityRepository : IEntityRepository
 
             foreach (var component in components)
             {
-                var old = serializer.Read(_connection, id, component.TypeId);
+                var old = reader.Read(_connection, id, component.TypeId);
 
                 if (component.Component == null)
-                    serializer.Delete(_connection, id, component.TypeId);
+                    deleter.Delete(_connection, id, component.TypeId);
                 else
-                    serializer.Write(_connection, id, component);
+                    writer.Write(_connection, id, component);
 
                 if (old.Component == null)
-                    serializer.Delete(_connection, id, component.TypeId, true);
+                    deleter.Delete(_connection, id, component.TypeId, true);
                 else
-                    serializer.Write(_connection, id, old, true);
+                    writer.Write(_connection, id, old, true);
             }
         }
     }
@@ -181,13 +188,25 @@ public class SqliteEntityRepository : IEntityRepository
             return;
         }
 
-        var serializer = _connection.GetSerializer();
+        var reader = SqlCommands.GetReader();
+        var writer = SqlCommands.GetWriter();
+        var deleter = SqlCommands.GetDeleter();
+
+        var id = entity.Item1;
+
         foreach (var component in entity.Item2)
         {
+            var old = reader.Read(_connection, id, component.TypeId);
+
             if (component.Component == null)
-                serializer.Delete(_connection, entity.Item1, component.TypeId);
+                deleter.Delete(_connection, id, component.TypeId);
             else
-                serializer.Write(_connection, entity.Item1, component);
+                writer.Write(_connection, id, component);
+
+            if (old.Component == null)
+                deleter.Delete(_connection, id, component.TypeId, true);
+            else
+                writer.Write(_connection, id, old, true);
         }
     }
 

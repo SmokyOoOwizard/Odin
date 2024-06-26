@@ -4,24 +4,56 @@ namespace Odin.Db.Sqlite.Utils;
 
 internal static class SqlCommands
 {
-    private static ISqliteComponentSerializer? _serializer;
+    private static ISqliteComponentDeleter? _deleter;
+    private static ISqliteComponentWriter? _writer;
+    private static ISqliteComponentReader? _reader;
 
-    public static ISqliteComponentSerializer GetSerializer(this SqliteConnection connection)
+    public static ISqliteComponentDeleter GetDeleter()
     {
-        if (_serializer != null)
-            return _serializer;
+        if (_deleter != null)
+            return _deleter;
 
-        var type = typeof(ISqliteComponentSerializer);
-        var types = AppDomain.CurrentDomain
-                             .GetAssemblies()
-                             .SelectMany(s => s.GetTypes())
-                             .First(p => type.IsAssignableFrom(p) && p.IsClass);
+        var type = typeof(ISqliteComponentDeleter);
+        var existsType = AppDomain.CurrentDomain
+                                  .GetAssemblies()
+                                  .SelectMany(s => s.GetTypes())
+                                  .First(p => type.IsAssignableFrom(p) && p.IsClass);
 
-        var creator = (ISqliteComponentSerializer)Activator.CreateInstance(types)!;
+        var deleter = (ISqliteComponentDeleter)Activator.CreateInstance(existsType)!;
+        _deleter = deleter;
+        return deleter;
+    }
 
-        _serializer = creator;
+    public static ISqliteComponentWriter GetWriter()
+    {
+        if (_writer != null)
+            return _writer;
 
-        return creator;
+        var type = typeof(ISqliteComponentWriter);
+        var existsType = AppDomain.CurrentDomain
+                                  .GetAssemblies()
+                                  .SelectMany(s => s.GetTypes())
+                                  .First(p => type.IsAssignableFrom(p) && p.IsClass);
+
+        var writer = (ISqliteComponentWriter)Activator.CreateInstance(existsType)!;
+        _writer = writer;
+        return writer;
+    }
+
+    public static ISqliteComponentReader GetReader()
+    {
+        if (_reader != null)
+            return _reader;
+
+        var type = typeof(ISqliteComponentReader);
+        var existsType = AppDomain.CurrentDomain
+                                  .GetAssemblies()
+                                  .SelectMany(s => s.GetTypes())
+                                  .First(p => type.IsAssignableFrom(p) && p.IsClass);
+
+        var reader = (ISqliteComponentReader)Activator.CreateInstance(existsType)!;
+        _reader = reader;
+        return reader;
     }
 
     public static void CreateBaseTablesIfNotExists(this SqliteConnection connection)

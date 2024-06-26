@@ -12,7 +12,7 @@ using Odin.CodeGen.Abstractions.Utils;
 namespace Odin.Db.Sqlite.CodeGen.Generators.Impl;
 
 [Generator]
-public class ComponentSqliteSerializationGenerator : AComponentIncrementalGenerator
+public class SqliteComponentReaderGenerator : AComponentIncrementalGenerator
 {
     protected override void GenerateCode(
         GeneratorExecutionContext context,
@@ -35,37 +35,8 @@ public class ComponentSqliteSerializationGenerator : AComponentIncrementalGenera
                                         .ToArray();
 
                             var additionalFieldsName = fields.Any() ? $", {string.Join(", ", fields)}" : string.Empty;
-                            var additionalFields = fields.Any()
-                                ? $", {string.Join(", ", fieldsDeclarations.Select(f => {
-                                    var mapCode = f.Type switch
-                                    {
-                                        EFieldType.UInt8 => $"'{{realComponent.{f.Name}.MapToByte()}}'",
-                                        EFieldType.UInt16 => $"'{{realComponent.{f.Name}.MapToShort()}}'",
-                                        EFieldType.UInt32 => $"'{{realComponent.{f.Name}.MapToInt()}}'",
-                                        EFieldType.UInt64 => $"'{{realComponent.{f.Name}.MapToLong()}}'",
-                                        _ => $"'{{realComponent.{f.Name}}}'"
-                                    };
-
-                                    return mapCode;
-                                }))}"
-                                : string.Empty;
 
                             var componentId = TypeComponentUtils.GetComponentTypeId(componentName);
-
-                            var insertSql =
-                                $@"
-                    case {componentId}:
-                        {{
-                            var realComponent = ({componentName})component.Component;
-                            
-                            if (old)
-                                sql = $@""INSERT OR REPLACE INTO __old_{tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
-                            else
-                                sql = $@""INSERT OR REPLACE INTO {tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
-                    
-                            break;
-                        }}
-";
 
                             var selectSql = $@"
                     case {componentId}:
@@ -115,22 +86,9 @@ public class ComponentSqliteSerializationGenerator : AComponentIncrementalGenera
                         }}
 ";
 
-                            var deleteSql = $@"
-                    case {componentId}:
-                            {{
-                                if (old)
-                                    sql = $@""DELETE FROM __old_{tableName} WHERE entityId = {{entityId}};"";
-                                else
-                                    sql = $@""DELETE FROM {tableName} WHERE entityId = {{entityId}};"";
-                                break;
-                            }}
-";
-
-                            return (insertSql, deleteSql, selectSql, fillComponentCode);
+                            return (selectSql, fillComponentCode);
                         }).ToArray();
-
-        var insertSwitchCases = string.Join("\n", tablesSql.Select(c => c.insertSql));
-        var deleteSwitchCases = string.Join("\n", tablesSql.Select(c => c.deleteSql));
+        
         var selectSwitchCases = string.Join("\n", tablesSql.Select(c => c.selectSql));
         var fillCode = string.Join("\n", tablesSql.Select(c => c.fillComponentCode));
 
@@ -146,42 +104,8 @@ using Odin.Db.Sqlite.Utils;
 
 namespace {namespaceName};
 
-public class SqliteComponentSerializer : ISqliteComponentSerializer
+public class SqliteComponentReader : ISqliteComponentReader
 {{
-    public void Write(SqliteConnection connection, ulong entityId, ComponentWrapper component, bool old = false)
-    {{
-        var sql = string.Empty;
-
-        switch (component.TypeId)
-        {{
-            {insertSwitchCases}
-            default:
-                throw new Exception(""Unknown component type"");
-        }}
-
-        using var command = connection.CreateCommand();
-
-        command.CommandText = sql;
-        command.ExecuteNonQuery();
-    }}
-
-    public void Delete(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
-    {{
-        var sql = string.Empty;
-
-        switch (componentTypeId)
-        {{
-            {deleteSwitchCases}
-            default:
-                throw new Exception(""Unknown component type"");
-        }}
-
-        using var command = connection.CreateCommand();
-
-        command.CommandText = sql;
-        command.ExecuteNonQuery();
-    }}
-
     public ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
     {{
         using var command = connection.CreateCommand();
@@ -211,6 +135,7 @@ public class SqliteComponentSerializer : ISqliteComponentSerializer
 }}
 ";
 
-        context.AddSource("SqliteComponentSerializer.g.cs", SourceText.From(code, Encoding.UTF8));
+        context.AddSource("SqliteComponentReader.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }
+
