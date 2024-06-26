@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Odin.Db.Sqlite.CodeGen.Sample</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" />
+        <ProjectReference Include="..\Odin.Db.Sqlite\Odin.Db.Sqlite.csproj" />
+        <ProjectReference Include="..\Odin.Db.Sqlite.CodeGen\Odin.Db.Sqlite.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="DDD.UbiquitousLanguageRegistry.txt"/>
+    </ItemGroup>
+
+</Project>
