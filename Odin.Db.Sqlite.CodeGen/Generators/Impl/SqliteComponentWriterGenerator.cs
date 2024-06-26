@@ -79,7 +79,7 @@ using Microsoft.Data.Sqlite;
 using Odin.Db.Sqlite;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
-using Odin.Db.Sqlite.Utils;
+using Odin.Utils;
 
 namespace {namespaceName};
 

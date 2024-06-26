@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" />
+      <ProjectReference Include="..\Odin.Utils\Odin.Utils.csproj" />
     </ItemGroup>
 
     <ItemGroup>
