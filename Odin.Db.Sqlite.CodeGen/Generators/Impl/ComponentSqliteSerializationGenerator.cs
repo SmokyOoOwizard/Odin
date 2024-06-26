@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Odin.Abstractions.Components.Declaration;
+using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
 
@@ -21,51 +22,117 @@ public class ComponentSqliteSerializationGenerator : AComponentIncrementalGenera
         var namespaceName = context.Compilation.AssemblyName;
 
         var tablesSql = components
-           .Select(c =>
-            {
-                var componentName = c.OriginalDefinition.ToDisplayString();
+                       .Select(c =>
+                        {
+                            var componentName = c.OriginalDefinition.ToDisplayString();
 
-                var tableName = componentName.Replace('.', '_');
+                            var tableName = componentName.Replace('.', '_');
 
-                var members = c.GetMembers();
-                var fields = ComponentFieldProcessor.GetFieldDeclarations(members)
-                                                    .Select(fieldDeclaration =>
-                                                     {
-                                                         var name = fieldDeclaration.Name;
-                                                         var type = fieldDeclaration.Type switch
-                                                         {
-                                                             EFieldType.String => "TEXT",
-                                                             EFieldType.Int => "INTEGER",
-                                                             EFieldType.Int8 => "INTEGER",
-                                                             EFieldType.Int16 => "INTEGER",
-                                                             EFieldType.Int32 => "INTEGER",
-                                                             EFieldType.Int64 => "INTEGER",
-                                                             EFieldType.UInt8 => "INTEGER",
-                                                             EFieldType.UInt16 => "INTEGER",
-                                                             EFieldType.UInt32 => "INTEGER",
-                                                             EFieldType.UInt64 => "INTEGER",
-                                                             EFieldType.Float => "FLOAT",
-                                                             EFieldType.Double => "DOUBLE",
-                                                             EFieldType.Bool => "BOOLEAN",
-                                                             _ => throw new ArgumentOutOfRangeException()
-                                                         };
-                                                         return $"{name} {type}" +
-                                                                (fieldDeclaration.CollectionType ==
-                                                                 ECollectionType.Array
-                                                                    ? "[]"
-                                                                    : string.Empty);
-                                                     }).ToArray();
+                            var members = c.GetMembers();
+                            var fieldsDeclarations = ComponentFieldProcessor.GetFieldDeclarations(members).ToArray();
+                            var fields = fieldsDeclarations
+                                        .Select(fieldDeclaration => fieldDeclaration.Name)
+                                        .ToArray();
 
-                var additionalFields = fields.Any() ? $", {string.Join(", ", fields)}" : string.Empty;
+                            var additionalFieldsName = fields.Any() ? $", {string.Join(", ", fields)}" : string.Empty;
+                            var additionalFields = fields.Any()
+                                ? $", {string.Join(", ", fieldsDeclarations.Select(f => {
+                                    var mapCode = f.Type switch
+                                    {
+                                        EFieldType.UInt8 => $"'{{realComponent.{f.Name}.MapToByte()}}'",
+                                        EFieldType.UInt16 => $"'{{realComponent.{f.Name}.MapToShort()}}'",
+                                        EFieldType.UInt32 => $"'{{realComponent.{f.Name}.MapToInt()}}'",
+                                        EFieldType.UInt64 => $"'{{realComponent.{f.Name}.MapToLong()}}'",
+                                        _ => $"'{{realComponent.{f.Name}}}'"
+                                    };
 
-                var sql =
-                    $"CREATE TABLE IF NOT EXISTS {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT{additionalFields});\n"
-                  + $"INSERT OR IGNORE INTO componentTypes (name, type, tableName) VALUES ('{componentName}', {{TypeComponentUtils.GetComponentTypeId<{componentName}>()}}, '{tableName}');";
+                                    return mapCode;
+                                }))}"
+                                : string.Empty;
 
-                return sql;
-            });
+                            var componentId = TypeComponentUtils.GetComponentTypeId(componentName);
 
-        var sql = string.Join("\n", tablesSql);
+                            var insertSql =
+                                $@"
+                    case {componentId}:
+                        {{
+                            var realComponent = ({componentName})component.Component;
+                            
+                            if (old)
+                                sql = $@""INSERT OR REPLACE INTO __old_{tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
+                            else
+                                sql = $@""INSERT OR REPLACE INTO {tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
+                    
+                            break;
+                        }}
+";
+
+                            var selectSql = $@"
+                    case {componentId}:
+                        {{
+                            if (old)
+                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM __old_{tableName} WHERE entityId = {{entityId}};"";
+                            else
+                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM {tableName} WHERE entityId = {{entityId}};"";
+                            break;
+                        }}
+";
+
+                            var fillCode = fieldsDeclarations.Select((f, i) =>
+                                                              {
+                                                                  var realI = i + 1;
+                                                                  var mapCode = f.Type switch
+                                                                  {
+                                                                      EFieldType.String => $"GetString({realI})",
+                                                                      EFieldType.Int8 => $"GetByte({realI})",
+                                                                      EFieldType.Int16 => $"GetInt16({realI})",
+                                                                      EFieldType.Int32 => $"GetInt32({realI})",
+                                                                      EFieldType.Int64 => $"GetInt64({realI})",
+                                                                      EFieldType.UInt8 =>
+                                                                          $"GetByte({realI}).MapToSbyte()",
+                                                                      EFieldType.UInt16 =>
+                                                                          $"GetInt16({realI}).MapToUshort()",
+                                                                      EFieldType.UInt32 =>
+                                                                          $"GetInt32({realI}).MapToUint()",
+                                                                      EFieldType.UInt64 =>
+                                                                          $"GetInt64({realI}).MapToUlong()",
+                                                                      EFieldType.Float => $"GetFloat({realI})",
+                                                                      EFieldType.Double => $"GetDouble({realI})",
+                                                                      EFieldType.Bool => $"GetBoolean({realI})",
+                                                                      _ => throw new ArgumentOutOfRangeException()
+                                                                  };
+
+                                                                  return $"component.{f.Name} = reader.{mapCode};";
+                                                              })
+                                                             .ToArray();
+                            var fillComponentCode = $@"
+                    case {componentId}:
+                        {{
+                            var component = new {componentName}();
+                            {string.Join("\n\t\t\t\t\t\t\t", fillCode)}
+
+                            return new ComponentWrapper({componentId}, component);
+                        }}
+";
+
+                            var deleteSql = $@"
+                    case {componentId}:
+                            {{
+                                if (old)
+                                    sql = $@""DELETE FROM __old_{tableName} WHERE entityId = {{entityId}};"";
+                                else
+                                    sql = $@""DELETE FROM {tableName} WHERE entityId = {{entityId}};"";
+                                break;
+                            }}
+";
+
+                            return (insertSql, deleteSql, selectSql, fillComponentCode);
+                        }).ToArray();
+
+        var insertSwitchCases = string.Join("\n", tablesSql.Select(c => c.insertSql));
+        var deleteSwitchCases = string.Join("\n", tablesSql.Select(c => c.deleteSql));
+        var selectSwitchCases = string.Join("\n", tablesSql.Select(c => c.selectSql));
+        var fillCode = string.Join("\n", tablesSql.Select(c => c.fillComponentCode));
 
         var code = $@"
 // <auto-generated/>
@@ -74,21 +141,76 @@ using System;
 using Microsoft.Data.Sqlite;
 using Odin.Db.Sqlite;
 using Odin.Abstractions.Components.Utils;
+using Odin.Abstractions.Entities;
+using Odin.Db.Sqlite.Utils;
 
 namespace {namespaceName};
 
-public class SqliteComponentTableCreator : ISqliteComponentTableCreator
+public class SqliteComponentSerializer : ISqliteComponentSerializer
 {{
-    public void CreateTables(SqliteConnection connection)
+    public void Write(SqliteConnection connection, ulong entityId, ComponentWrapper component, bool old = false)
+    {{
+        var sql = string.Empty;
+
+        switch (component.TypeId)
+        {{
+            {insertSwitchCases}
+            default:
+                throw new Exception(""Unknown component type"");
+        }}
+
+        using var command = connection.CreateCommand();
+
+        command.CommandText = sql;
+        command.ExecuteNonQuery();
+    }}
+
+    public void Delete(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
+    {{
+        var sql = string.Empty;
+
+        switch (componentTypeId)
+        {{
+            {deleteSwitchCases}
+            default:
+                throw new Exception(""Unknown component type"");
+        }}
+
+        using var command = connection.CreateCommand();
+
+        command.CommandText = sql;
+        command.ExecuteNonQuery();
+    }}
+
+    public ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
     {{
         using var command = connection.CreateCommand();
 
-        command.CommandText = $@""{sql}"";
-        command.ExecuteNonQuery();
+        var sql = string.Empty;
+
+        switch (componentTypeId)
+        {{
+            {selectSwitchCases}
+            default:
+                throw new Exception(""Unknown component type"");
+        }}
+
+        command.CommandText = sql;
+        using var reader = command.ExecuteReader();
+
+        if (!reader.Read())
+            return new ComponentWrapper(componentTypeId, null);
+
+        switch (componentTypeId)
+        {{
+            {fillCode}
+            default:
+                throw new Exception(""Unknown component type"");
+        }}
     }}
 }}
 ";
 
-        context.AddSource("SqliteComponentTableCreator.g.cs", SourceText.From(code, Encoding.UTF8));
+        context.AddSource("SqliteComponentSerializer.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }

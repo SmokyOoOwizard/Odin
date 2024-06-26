@@ -19,12 +19,36 @@ public class SqliteEntityRepository : IEntityRepository
 
     public bool Get<T>(ulong entityId, out T? component) where T : IComponent
     {
-        throw new NotImplementedException();
+        var typeId = TypeComponentUtils.GetComponentTypeId<T>();
+
+        var serializer = _connection.GetSerializer();
+        var componentWrapper = serializer.Read(_connection, entityId, typeId);
+
+        if (componentWrapper.Component == null)
+        {
+            component = default;
+            return false;
+        }
+
+        component = (T)componentWrapper.Component;
+        return true;
     }
 
     public bool GetOld<T>(ulong entityId, out T? component) where T : IComponent
     {
-        throw new NotImplementedException();
+        var typeId = TypeComponentUtils.GetComponentTypeId<T>();
+
+        var serializer = _connection.GetSerializer();
+        var componentWrapper = serializer.Read(_connection, entityId, typeId, true);
+
+        if (componentWrapper.Component == null)
+        {
+            component = default;
+            return false;
+        }
+
+        component = (T)componentWrapper.Component;
+        return true;
     }
 
     public IEnumerable<ulong> GetEntities()
@@ -47,12 +71,37 @@ public class SqliteEntityRepository : IEntityRepository
 
     public void Replace<T>(ulong entityId, T? component) where T : IComponent
     {
-        throw new NotImplementedException();
+        var typeId = TypeComponentUtils.GetComponentTypeId<T>();
+
+        var serializer = _connection.GetSerializer();
+
+        var old = serializer.Read(_connection, entityId, typeId);
+
+        if (component == null)
+            serializer.Delete(_connection, entityId, typeId);
+        else
+            serializer.Write(_connection, entityId, new ComponentWrapper(typeId, component));
+
+        if (old.Component == null)
+            serializer.Delete(_connection, entityId, typeId, true);
+        else
+            serializer.Write(_connection, entityId, old, true);
     }
 
     public void Remove<T>(ulong entityId) where T : IComponent
     {
-        throw new NotImplementedException();
+        var typeId = TypeComponentUtils.GetComponentTypeId<T>();
+
+        var serializer = _connection.GetSerializer();
+
+        var old = serializer.Read(_connection, entityId, typeId);
+
+        serializer.Delete(_connection, entityId, typeId);
+
+        if (old.Component == null)
+            serializer.Delete(_connection, entityId, typeId, true);
+        else
+            serializer.Write(_connection, entityId, old, true);
     }
 
     public ulong CreateEntity()
@@ -98,6 +147,7 @@ public class SqliteEntityRepository : IEntityRepository
 
     public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
     {
+        var serializer = _connection.GetSerializer();
         foreach (var (id, components) in entities)
         {
             if (components.Any(c => c.TypeId == _destroyedId))
@@ -106,7 +156,20 @@ public class SqliteEntityRepository : IEntityRepository
                 continue;
             }
 
-            // todo apply components changes
+            foreach (var component in components)
+            {
+                var old = serializer.Read(_connection, id, component.TypeId);
+
+                if (component.Component == null)
+                    serializer.Delete(_connection, id, component.TypeId);
+                else
+                    serializer.Write(_connection, id, component);
+
+                if (old.Component == null)
+                    serializer.Delete(_connection, id, component.TypeId, true);
+                else
+                    serializer.Write(_connection, id, old, true);
+            }
         }
     }
 
@@ -118,7 +181,14 @@ public class SqliteEntityRepository : IEntityRepository
             return;
         }
 
-        // todo apply components changes
+        var serializer = _connection.GetSerializer();
+        foreach (var component in entity.Item2)
+        {
+            if (component.Component == null)
+                serializer.Delete(_connection, entity.Item1, component.TypeId);
+            else
+                serializer.Write(_connection, entity.Item1, component);
+        }
     }
 
     public void Clear()
