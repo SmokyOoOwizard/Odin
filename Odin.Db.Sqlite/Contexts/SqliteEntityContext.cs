@@ -23,7 +23,7 @@ public class SqliteEntityContext : AEntityContext
         connection.Open();
         connection.CreateBaseTablesIfNotExists();
         
-        var rep = new SqliteEntityRepository(_connection);
+        var rep = new SqliteEntityRepository(_connection, Id);
         EntityContextsRepository.AddRepository(Id, rep);
     }
 

@@ -31,9 +31,9 @@ public class SqliteComponentDeleterGenerator : AComponentIncrementalGenerator
                     case {componentId}:
                             {{
                                 if (old)
-                                    sql = $@""DELETE FROM __old_{tableName} WHERE entityId = {{entityId}};"";
+                                    sql = $@""DELETE FROM __old_{tableName} WHERE entityId = {{entityId}} AND contextId = {{contextId.MapToLong()}};"";
                                 else
-                                    sql = $@""DELETE FROM {tableName} WHERE entityId = {{entityId}};"";
+                                    sql = $@""DELETE FROM {tableName} WHERE entityId = {{entityId}} AND contextId = {{contextId.MapToLong()}};"";
                                 break;
                             }}
 ";
@@ -57,7 +57,7 @@ namespace {namespaceName};
 
 public class SqliteComponentDeleter : ISqliteComponentDeleter
 {{
-    public void Delete(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
+    public void Delete(SqliteConnection connection, ulong entityId, ulong contextId, ulong componentTypeId, bool old = false)
     {{
         var sql = string.Empty;
 

@@ -42,9 +42,9 @@ public class SqliteComponentReaderGenerator : AComponentIncrementalGenerator
                     case {componentId}:
                         {{
                             if (old)
-                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM __old_{tableName} WHERE entityId = {{entityId}};"";
+                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM __old_{tableName} WHERE entityId = {{entityId}} AND contextId = {{contextId.MapToLong()}};"";
                             else
-                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM {tableName} WHERE entityId = {{entityId}};"";
+                                sql = $@""SELECT entityId{string.Join(", ", additionalFieldsName)} FROM {tableName} WHERE entityId = {{entityId}} AND contextId = {{contextId.MapToLong()}};"";
                             break;
                         }}
 ";
@@ -106,7 +106,7 @@ namespace {namespaceName};
 
 public class SqliteComponentReader : ISqliteComponentReader
 {{
-    public ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false)
+    public ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong contextId, ulong componentTypeId, bool old = false)
     {{
         using var command = connection.CreateCommand();
 

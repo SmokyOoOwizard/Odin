@@ -5,5 +5,5 @@ namespace Odin.Db.Sqlite;
 
 public interface ISqliteComponentWriter
 {
-    void Write(SqliteConnection connection, ulong entityId, ComponentWrapper component, bool old = false);
+    void Write(SqliteConnection connection, ulong entityId, ulong contextId, ComponentWrapper component, bool old = false);
 }

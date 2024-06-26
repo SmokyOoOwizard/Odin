@@ -59,8 +59,8 @@ public class ComponentSqliteTableGenerator : AComponentIncrementalGenerator
                 var additionalFields = fields.Any() ? $", {string.Join(", ", fields)}" : string.Empty;
 
                 var sql =
-                    $"CREATE TABLE IF NOT EXISTS {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER UNIQUE{additionalFields});\n\t\t\t"
-                  + $"CREATE TABLE IF NOT EXISTS __old_{tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER UNIQUE{additionalFields});\n\t\t\t"
+                    $"CREATE TABLE IF NOT EXISTS {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER, contextId INTEGER{additionalFields}, CONSTRAINT entity UNIQUE (entityId, contextId));\n\t\t\t"
+                  + $"CREATE TABLE IF NOT EXISTS __old_{tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER, contextId INTEGER{additionalFields}, CONSTRAINT entity UNIQUE (entityId, contextId));\n\t\t\t"
                   + $"INSERT OR IGNORE INTO componentTypes (name, type, tableName) VALUES ('{componentName}', {{TypeComponentUtils.GetComponentTypeId<{componentName}>()}}, '{tableName}');";
 
                 return sql;

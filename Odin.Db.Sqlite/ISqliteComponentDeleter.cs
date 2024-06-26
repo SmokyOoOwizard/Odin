@@ -4,5 +4,5 @@ namespace Odin.Db.Sqlite;
 
 public interface ISqliteComponentDeleter
 {
-    void Delete(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false);
+    void Delete(SqliteConnection connection, ulong entityId, ulong contextId, ulong componentTypeId, bool old = false);
 }

@@ -5,5 +5,5 @@ namespace Odin.Db.Sqlite;
 
 public interface ISqliteComponentReader
 {
-    ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong componentTypeId, bool old = false);
+    ComponentWrapper Read(SqliteConnection connection, ulong entityId, ulong contextId, ulong componentTypeId, bool old = false);
 }

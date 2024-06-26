@@ -58,9 +58,9 @@ public class SqliteComponentWriterGenerator : AComponentIncrementalGenerator
                             var realComponent = ({componentName})component.Component;
                             
                             if (old)
-                                sql = $@""INSERT OR REPLACE INTO __old_{tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
+                                sql = $@""INSERT OR REPLACE INTO __old_{tableName} (entityId, contextId{additionalFieldsName}) VALUES ({{entityId}}, {{contextId.MapToLong()}}{additionalFields});"";
                             else
-                                sql = $@""INSERT OR REPLACE INTO {tableName} (entityId{additionalFieldsName}) VALUES ({{entityId}}{additionalFields});"";
+                                sql = $@""INSERT OR REPLACE INTO {tableName} (entityId, contextId{additionalFieldsName}) VALUES ({{entityId}}, {{contextId.MapToLong()}}{additionalFields});"";
                     
                             break;
                         }}
@@ -85,7 +85,7 @@ namespace {namespaceName};
 
 public class SqliteComponentWriter : ISqliteComponentWriter
 {{
-    public void Write(SqliteConnection connection, ulong entityId, ComponentWrapper component, bool old = false)
+    public void Write(SqliteConnection connection, ulong entityId, ulong contextId, ComponentWrapper component, bool old = false)
     {{
         var sql = string.Empty;
 

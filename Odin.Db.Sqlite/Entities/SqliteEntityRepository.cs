@@ -12,10 +12,12 @@ public class SqliteEntityRepository : IEntityRepository
     private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
     private readonly SqliteConnection _connection;
+    private readonly ulong _contextId;
 
-    public SqliteEntityRepository(SqliteConnection connection)
+    public SqliteEntityRepository(SqliteConnection connection, ulong contextId)
     {
         _connection = connection;
+        _contextId = contextId;
         if (_connection.State == ConnectionState.Closed)
         {
             _connection.Open();
@@ -28,7 +30,7 @@ public class SqliteEntityRepository : IEntityRepository
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var serializer = SqlCommands.GetReader();
-        var componentWrapper = serializer.Read(_connection, entityId, typeId);
+        var componentWrapper = serializer.Read(_connection, entityId, _contextId, typeId);
 
         if (componentWrapper.Component == null)
         {
@@ -45,7 +47,7 @@ public class SqliteEntityRepository : IEntityRepository
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var serializer = SqlCommands.GetReader();
-        var componentWrapper = serializer.Read(_connection, entityId, typeId, true);
+        var componentWrapper = serializer.Read(_connection, entityId, _contextId, typeId, true);
 
         if (componentWrapper.Component == null)
         {
@@ -61,7 +63,7 @@ public class SqliteEntityRepository : IEntityRepository
     {
         using var command = _connection.CreateCommand();
 
-        command.CommandText = "SELECT id FROM entities;";
+        command.CommandText = $"SELECT entityId FROM entities WHERE contextId = {_contextId.MapToLong()};";
         using var reader = command.ExecuteReader();
 
         while (reader.Read() && reader.GetValue(0) != DBNull.Value)
@@ -83,17 +85,17 @@ public class SqliteEntityRepository : IEntityRepository
         var writer = SqlCommands.GetWriter();
         var deleter = SqlCommands.GetDeleter();
 
-        var old = reader.Read(_connection, entityId, typeId);
+        var old = reader.Read(_connection, entityId, _contextId, typeId);
 
         if (component == null)
-            deleter.Delete(_connection, entityId, typeId);
+            deleter.Delete(_connection, entityId, _contextId, typeId);
         else
-            writer.Write(_connection, entityId, new ComponentWrapper(typeId, component));
+            writer.Write(_connection, entityId, _contextId, new ComponentWrapper(typeId, component));
 
         if (old.Component == null)
-            deleter.Delete(_connection, entityId, typeId, true);
+            deleter.Delete(_connection, entityId, _contextId, typeId, true);
         else
-            writer.Write(_connection, entityId, old, true);
+            writer.Write(_connection, entityId, _contextId, old, true);
     }
 
     public void Remove<T>(ulong entityId) where T : IComponent
@@ -104,14 +106,14 @@ public class SqliteEntityRepository : IEntityRepository
         var writer = SqlCommands.GetWriter();
         var deleter = SqlCommands.GetDeleter();
 
-        var old = reader.Read(_connection, entityId, typeId);
+        var old = reader.Read(_connection, entityId, _contextId, typeId);
 
-        deleter.Delete(_connection, entityId, typeId);
+        deleter.Delete(_connection, entityId, _contextId, typeId);
 
         if (old.Component == null)
-            deleter.Delete(_connection, entityId, typeId, true);
+            deleter.Delete(_connection, entityId, _contextId, typeId, true);
         else
-            writer.Write(_connection, entityId, old, true);
+            writer.Write(_connection, entityId, _contextId, old, true);
     }
 
     public ulong CreateEntity()
@@ -137,7 +139,7 @@ public class SqliteEntityRepository : IEntityRepository
                 command.CommandText =
                     $"INSERT OR IGNORE INTO properties (name, value) VALUES ('lastEntityId', {lastId.MapToLong()});" +
                     $"UPDATE properties SET value = {lastId.MapToLong()} WHERE name = 'lastEntityId';" +
-                    $"INSERT INTO entities (id) VALUES ({lastId.MapToLong()});";
+                    $"INSERT INTO entities (entityId, contextId) VALUES ({lastId.MapToLong()}, {_contextId.MapToLong()});";
                 command.ExecuteNonQuery();
             }
 
@@ -149,7 +151,8 @@ public class SqliteEntityRepository : IEntityRepository
     {
         using var command = _connection.CreateCommand();
 
-        command.CommandText = $"DELETE FROM entities WHERE id = {entityId.MapToLong()};";
+        command.CommandText =
+            $"DELETE FROM entities WHERE entityId = {entityId.MapToLong()} AND contextId = {_contextId.MapToLong()};";
         command.ExecuteNonQuery();
 
         // todo delete components;
@@ -171,17 +174,17 @@ public class SqliteEntityRepository : IEntityRepository
 
             foreach (var component in components)
             {
-                var old = reader.Read(_connection, id, component.TypeId);
+                var old = reader.Read(_connection, id, _contextId, component.TypeId);
 
                 if (component.Component == null)
-                    deleter.Delete(_connection, id, component.TypeId);
+                    deleter.Delete(_connection, id, _contextId, component.TypeId);
                 else
-                    writer.Write(_connection, id, component);
+                    writer.Write(_connection, id, _contextId, component);
 
                 if (old.Component == null)
-                    deleter.Delete(_connection, id, component.TypeId, true);
+                    deleter.Delete(_connection, id, _contextId, component.TypeId, true);
                 else
-                    writer.Write(_connection, id, old, true);
+                    writer.Write(_connection, id, _contextId, old, true);
             }
         }
     }
@@ -202,17 +205,17 @@ public class SqliteEntityRepository : IEntityRepository
 
         foreach (var component in entity.Item2)
         {
-            var old = reader.Read(_connection, id, component.TypeId);
+            var old = reader.Read(_connection, id, _contextId, component.TypeId);
 
             if (component.Component == null)
-                deleter.Delete(_connection, id, component.TypeId);
+                deleter.Delete(_connection, id, _contextId, component.TypeId);
             else
-                writer.Write(_connection, id, component);
+                writer.Write(_connection, id, _contextId, component);
 
             if (old.Component == null)
-                deleter.Delete(_connection, id, component.TypeId, true);
+                deleter.Delete(_connection, id, _contextId, component.TypeId, true);
             else
-                writer.Write(_connection, id, old, true);
+                writer.Write(_connection, id, _contextId, old, true);
         }
     }
 
@@ -220,7 +223,7 @@ public class SqliteEntityRepository : IEntityRepository
     {
         using var command = _connection.CreateCommand();
 
-        command.CommandText = "DELETE FROM entities;";
+        command.CommandText = $"DELETE FROM entities WHERE contextId = {_contextId.MapToLong()};";
         command.ExecuteNonQuery();
 
         // todo delete components;
