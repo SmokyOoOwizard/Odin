@@ -10,7 +10,7 @@ using Odin.CodeGen.Abstractions.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl;
 
-[Generator]
+//[Generator]
 public class ComponentSerializationGenerator : AComponentIncrementalGenerator
 {
     protected override void GenerateCode(GeneratorExecutionContext context, IEnumerable<INamedTypeSymbol> components)
