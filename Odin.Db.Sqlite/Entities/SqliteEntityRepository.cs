@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Data;
+using Microsoft.Data.Sqlite;
 using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
@@ -15,6 +16,11 @@ public class SqliteEntityRepository : IEntityRepository
     public SqliteEntityRepository(SqliteConnection connection)
     {
         _connection = connection;
+        if (_connection.State == ConnectionState.Closed)
+        {
+            _connection.Open();
+            connection.CreateBaseTablesIfNotExists();
+        }
     }
 
     public bool Get<T>(ulong entityId, out T? component) where T : IComponent
