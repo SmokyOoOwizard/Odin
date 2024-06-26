@@ -16,26 +16,27 @@ public abstract class AComponentIncrementalGenerator : ISourceGenerator
     public void Execute(GeneratorExecutionContext context)
     {
         var components = GetAllTypes(context.Compilation)
-           .Where(c =>
-            {
-                var interfaces = c?.Interfaces;
-                if (interfaces == null)
-                    return false;
+                        .Where(c =>
+                         {
+                             var interfaces = c?.Interfaces;
+                             if (interfaces == null)
+                                 return false;
 
-                // Go through all attributes of the class.
-                foreach (var baseType in interfaces)
-                {
-                    var interfaceName = baseType.OriginalDefinition.ToDisplayString();
+                             // Go through all attributes of the class.
+                             foreach (var baseType in interfaces)
+                             {
+                                 var interfaceName = baseType.OriginalDefinition.ToDisplayString();
 
-                    if (interfaceName != ComponentInterfaceName)
-                        continue;
+                                 if (interfaceName != ComponentInterfaceName)
+                                     continue;
 
-                    return true;
-                }
+                                 return true;
+                             }
 
-                return false;
-            });
-        
+                             return false;
+                         })
+                        .Where(c => c.DeclaredAccessibility == Accessibility.Public);
+
         GenerateCode(context, components);
     }
 
