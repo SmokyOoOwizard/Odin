@@ -12,7 +12,7 @@ public abstract class AComponentChanges : ATestsWithContext
     {
     }
     
-    private struct TestComponent : IComponent
+    public struct TestComponent : IComponent
     {
         public ulong TestData;
     }
