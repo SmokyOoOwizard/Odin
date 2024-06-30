@@ -4,16 +4,16 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Diagnostics.Impl;
+namespace Odin.Component.CodeGen.Diagnostics.Impl.Components;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
+public class ComponentArrayRankMoreOneAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
 {
-    private const string DIAGNOSTIC_ID = "ComponentRules_0005";
+    private const string DIAGNOSTIC_ID = "ComponentRules_0004";
     private const string CATEGORY = "Structure";
 
     private static readonly LocalizableString Message =
-        "A component cannot contain non primitive types";
+        "A component cannot contain arrays with rank greater than 1";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,
@@ -34,20 +34,11 @@ public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDi
         var type = typeSymbol.Type;
         var typeKind = type.GetTypedConstantKind();
 
-        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum)
+        if (typeKind != TypedConstantKind.Array)
             return;
 
-        if (typeKind == TypedConstantKind.Array)
-        {
-            if (typeSymbol.Type is IArrayTypeSymbol array)
-            {
-                var elementType = array.ElementType;
-                var elementTypeKind = elementType.GetTypedConstantKind();
-
-                if (elementTypeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum)
-                    return;
-            }
-        }
+        if (typeSymbol.Type is IArrayTypeSymbol { Rank: 1 })
+            return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
         context.ReportDiagnostic(diagnostic);

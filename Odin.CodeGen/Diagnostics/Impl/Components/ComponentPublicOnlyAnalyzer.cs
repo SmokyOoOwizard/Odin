@@ -2,18 +2,16 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Diagnostics.Impl;
+namespace Odin.Component.CodeGen.Diagnostics.Impl.Components;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer
+public class ComponentPublicOnlyAnalyzer : AComponentTypeDiagnosticAnalyzer
 {
-    private const string DIAGNOSTIC_ID = "ComponentRules_0003";
-    private const string CATEGORY = "Structure";
+    private const string DIAGNOSTIC_ID = "ComponentRules_0006";
+    private const string CATEGORY = "Declaration";
 
-    private static readonly LocalizableString Message =
-        "A component cannot contain reference fields";
+    private static readonly LocalizableString Message = "A component can only be a public";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,
@@ -24,20 +22,15 @@ public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticA
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-    protected override SyntaxKind[] SupportedSyntaxKinds => new[] { SyntaxKind.FieldDeclaration };
+    protected override SyntaxKind[] SupportedSyntaxKinds => new[] { SyntaxKind.StructDeclaration };
 
     protected override void Analyze(SyntaxNodeAnalysisContext context, ISymbol declaredSymbol)
     {
-        if (declaredSymbol is not IFieldSymbol typeSymbol)
+        var typeSymbol = declaredSymbol as INamedTypeSymbol;
+        if (typeSymbol == null)
             return;
 
-        var type = typeSymbol.Type;
-        var typeKind = type.GetTypedConstantKind();
-
-        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum || type.IsValueType)
-            return;
-
-        if (typeKind == TypedConstantKind.Array)
+        if (typeSymbol.DeclaredAccessibility == Accessibility.Public)
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());

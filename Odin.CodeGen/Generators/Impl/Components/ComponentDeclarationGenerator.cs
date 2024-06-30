@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using Odin.CodeGen.Abstractions;
 using Odin.Component.CodeGen.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl;
+namespace Odin.Component.CodeGen.Generators.Impl.Components;
 
 [Generator]
 public class ComponentDeclarationGenerator : AComponentIncrementalGenerator
