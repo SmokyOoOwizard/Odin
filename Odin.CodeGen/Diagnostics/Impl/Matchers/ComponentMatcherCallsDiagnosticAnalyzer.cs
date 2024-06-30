@@ -13,11 +13,11 @@ public class ComponentMatcherCallsDiagnosticAnalyzer : AComponentMatcherConfigur
 {
     private static readonly string AllowMethodNamespace = typeof(AComponentMatcher).Namespace!;
 
-    private const string DIAGNOSTIC_ID = "ComponentRules_0006";
-    private const string CATEGORY = "Structure";
+    private const string DIAGNOSTIC_ID = "MatcherRules_0001";
+    private const string CATEGORY = "Matcher";
 
     private static readonly LocalizableString Message =
-        "A component cannot contain arrays with rank greater than 12";
+        "All called functions must be from odin";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,

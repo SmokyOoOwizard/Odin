@@ -10,11 +10,11 @@ namespace Odin.Component.CodeGen.Diagnostics.Impl.Matchers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentMatcherContainsOnlyCallsDiagnosticAnalyzer : AComponentMatcherConfigureDiagnosticAnalyzer
 {
-    private const string DIAGNOSTIC_ID = "ComponentRules_0005";
-    private const string CATEGORY = "Structure";
+    private const string DIAGNOSTIC_ID = "MatcherRules_0002";
+    private const string CATEGORY = "Matcher";
 
     private static readonly LocalizableString Message =
-        "A component cannot contain arrays with rank greater than 12";
+        "Only method calls are allowed";
 
     private static readonly DiagnosticDescriptor Rule = new(DIAGNOSTIC_ID,
                                                             Message,
