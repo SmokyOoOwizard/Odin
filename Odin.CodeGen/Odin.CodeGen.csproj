@@ -10,7 +10,7 @@
         <IsRoslynComponent>true</IsRoslynComponent>
 
         <RootNamespace>Odin.Component.CodeGen</RootNamespace>
-        <PackageId>Odin.Component.CodeGen</PackageId>
+        <PackageId>Odin.CodeGen</PackageId>
     </PropertyGroup>
 
     <ItemGroup>

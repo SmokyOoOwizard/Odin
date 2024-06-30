@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynSourceGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../Odin.Component.CodeGen.Sample/Odin.Component.CodeGen.Sample.csproj"
+      "targetProject": "../Odin.CodeGen.Sample/Odin.CodeGen.Sample.csproj"
     }
   }
 }
