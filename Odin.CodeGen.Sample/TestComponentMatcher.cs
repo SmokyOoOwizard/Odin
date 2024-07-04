@@ -8,8 +8,16 @@ public class TestComponentMatcher : AComponentMatcher
     public override void Configure()
     {
         Filter().Any(
-            c => c.NotHas<DestroyedComponent>(),
-            c => c.All(w => w.Has<DestroyedComponent>())
-        );
+            c => c.All(w => w.Has<DestroyedComponent>().Has<DestroyedComponent>().Added<DestroyedComponent>()),
+            c => c.NotHas<DestroyedComponent>()
+        ).Has<DestroyedComponent>().Added<DestroyedComponent>();
+    }
+}
+
+public class Test2ComponentMatcher : AComponentMatcher
+{
+    public override void Configure()
+    {
+        Filter().Has<DestroyedComponent>();
     }
 }
