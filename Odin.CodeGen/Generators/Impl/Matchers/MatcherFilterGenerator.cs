@@ -1,230 +1,180 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Newtonsoft.Json;
 using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Components.Utils;
+using Odin.Abstractions.Entities;
 using Odin.CodeGen.Abstractions;
-using Odin.CodeGen.Abstractions.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl.Matchers;
 
 [Generator]
 public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
 {
-    protected override void GenerateCode(GeneratorExecutionContext context, IEnumerable<INamedTypeSymbol> matchers)
+    protected override void GenerateCode(
+        GeneratorExecutionContext context,
+        IEnumerable<(MethodDeclarationSyntax, FilterComponent)> matchers
+    )
     {
         var namespaceName = context.Compilation.AssemblyName;
 
-        var methodBody = matchers
-           .Select(s =>
+        var processedMatchers = matchers.Select(c =>
+        {
+            var json = JsonConvert.SerializeObject(c.Item2);
+            var id = TypeComponentUtils.GetComponentTypeId(json);
+
+            var parent = (ClassDeclarationSyntax)c.Item1.Parent!;
+
+            var semanticModel = context.Compilation.GetSemanticModel(c.Item1.SyntaxTree);
+            var typeSymbol = semanticModel.GetDeclaredSymbol(parent)!;
+
+            return new
             {
-                var fullName = s.OriginalDefinition.ToDisplayString();
+                json,
+                id,
+                filter = c.Item2,
+                syntax = c.Item1,
+                symbol = typeSymbol
+            };
+        }).ToArray();
 
-                var members = s.GetMembers()
-                               .First(c => c.Name == nameof(AComponentMatcher.Configure) && c is IMethodSymbol);
+        var ids = processedMatchers
+                 .Select(c =>
+                  {
+                      var fullName = c.symbol.ToDisplayString();
 
+                      return $"case \"{fullName}\": return {c.id};";
+                  })
+                 .ToArray();
 
-                var w= members.DeclaringSyntaxReferences.First();
+        var filterCases = processedMatchers.Select(c =>
+        {
+            var fullName = c.symbol.ToDisplayString().Replace('.', '_');
+            return $"case {c.id}: return Filter_{fullName};";
+        }).ToArray();
 
-                var node = w.GetSyntax() as MethodDeclarationSyntax;
+        var filterFunctions = processedMatchers
+                             .Select(c =>
+                              {
+                                  var fullName = c.symbol.ToDisplayString().Replace('.', '_');
 
-                Parse(node!);
-                
-                return $"""
-                             
-                        """;
-            }).ToArray();
+                                  var hasPart = "coldStorage(entityId, {0})";
+                                  var notHasPart = "!coldStorage(entityId, {0})";
+
+                                  var addedPart =
+                                      "changes.Any(c => c.TypeId == {0} && c.Component is not null)";
+                                  var removedPart =
+                                      "changes.Any(c => c.TypeId == {0} && c.Component is null)";
+                                  var anyChangesPart = "changes.Any(c => c.TypeId == {0})";
+
+                                  string AllPart(string[] arg) => $"({string.Join(" && ", arg)})";
+                                  string AnyPart(string[] arg) => $"({string.Join(" || ", arg)})";
+                                  string NotPart(string[] arg) => $"(!{string.Join(" && !", arg)})";
+
+                                  string FilterToString(FilterComponent component)
+                                  {
+                                      var type = component.Type;
+                                      if (type is EFilterType.All or EFilterType.Any or EFilterType.Not)
+                                      {
+                                          if (component.Children == null || component.Children.Length == 0)
+                                          {
+                                              return "true";
+                                          }
+
+                                          var children = component.Children.Select(FilterToString).ToArray();
+
+                                          var formated = type switch
+                                          {
+                                              EFilterType.All => AllPart(children),
+                                              EFilterType.Any => AnyPart(children),
+                                              EFilterType.Not => NotPart(children),
+                                          };
+
+                                          return formated;
+                                      }
+
+                                      {
+                                          var id = TypeComponentUtils.GetComponentTypeId(component.GenericArg);
+
+                                          var conditionPreFormated = type switch
+                                          {
+                                              EFilterType.Has => hasPart,
+                                              EFilterType.NotHas => notHasPart,
+                                              EFilterType.Added => addedPart,
+                                              EFilterType.Removed => removedPart,
+                                              EFilterType.AnyChanges => anyChangesPart,
+                                          };
+
+                                          var formated = string.Format(conditionPreFormated, id);
+
+                                          return formated;
+                                      }
+                                  }
+
+                                  var condition = FilterToString(c.filter);
+
+                                  return $@"
+    private static bool Filter_{fullName}(ulong entityId, Func<ulong, ulong, bool> coldStorage, {nameof(ComponentWrapper)}[] changes)
+    {{
+        if ({condition})
+            return true;
+        return false;
+    }}
+";
+                              })
+                             .ToArray();
 
         var code = $@"
 // <auto-generated/>
 
-using Odin.Abstractions.Components.Declaration;
-using Odin.Abstractions.Components.Declaration.Builder.States;
+using System;
+using System.Linq;
 using Odin.Abstractions.Components.Utils;
+using Odin.Abstractions.Entities;
+using Odin.Abstractions.Collectors.Matcher;
 
 namespace {namespaceName};
-public class MatcherFilterQ
+public static class MatcherFilterRepository
 {{
+    public static string GetMatcherJson(ulong matcherId)
+    {{
+        switch (matcherId)
+        {{
+            {string.Join("\n\t\t\t", processedMatchers.Select(c => $"case {c.id}: return \"{c.json.Replace("\"", "\\\"")}\";"))}
+            default: 
+                throw new Exception($""Matcher with id {{matcherId}} not found"");
+        }}
+    }}
 
+    public static ulong GetMatcherId<T>() where T : {nameof(AComponentMatcher)}
+    {{
+        var fullName = typeof(T).FullName;
+        switch (fullName)
+        {{
+            {string.Join("\n\t\t\t", ids)}
+            default: 
+                throw new Exception($""Matcher with type {{typeof(T).Name}} not found"");
+        }}
+    }}
+
+    public static Func<ulong, Func<ulong, ulong, bool>, {nameof(ComponentWrapper)}[], bool> GetFilter(ulong matcherId) 
+    {{
+        switch (matcherId)
+        {{
+            {string.Join("\n\t\t\t", filterCases)}
+            default: 
+                throw new Exception($""Matcher with id {{matcherId}} not found"");
+        }} 
+    }}
+
+{string.Join("\n", filterFunctions)}
 }}
 ";
 
-        context.AddSource("ComponentDeclarations.g.cs", SourceText.From(code, Encoding.UTF8));
-    }
-
-    private void Parse(MethodDeclarationSyntax node)
-    {
-        var n = node.Body.ChildNodes().First();
-        var rawNode = n.ToString();
-
-        if (!rawNode.StartsWith("Filter()."))
-            throw new Exception(); // todo
-
-        rawNode = rawNode.RemoveComments();
-        rawNode = rawNode.Replace("Filter()", "");
-
-       var parsedFilter= ParseFunction(rawNode);
-        
-        return;
-    }
-
-    private FilterComponent[] ParseArguments(string text)
-    {
-        text = text.Trim();
-        if (string.IsNullOrWhiteSpace(text))
-            return Array.Empty<FilterComponent>();
-
-        var arguments = new List<FilterComponent>();
-
-        var tailStart = 0;
-        while (tailStart < text.Length)
-        {
-            var substring = text.Substring(tailStart);
-            var end = 0;
-            while (true)
-            {
-                var stringWithOffset = substring.Substring(end);
-                var group = StringParser.ParseRecursiveGroups(stringWithOffset);
-                if (group.StartIndex == -1)
-                {
-                    break;
-                }
-
-                end += group.EndIndex;
-
-                var tail = stringWithOffset.Substring(group.EndIndex);
-                var commaOffset = tail.IndexOf(',');
-                if (commaOffset != -1)
-                {
-                    var stringBeforeComma = tail.Substring(0, commaOffset);
-                    if (string.IsNullOrWhiteSpace(stringBeforeComma))
-                        break;
-                }
-            }
-
-            var funcOffset = substring.IndexOf('.');
-            var funcText = substring.Substring(funcOffset, end - funcOffset);
-
-            var parsedFunction = ParseFunction(funcText);
-            arguments.Add(parsedFunction);
-
-            var commaIndex = substring.IndexOf(',') + 1;
-            if (commaIndex == 0)
-            {
-                break;
-            }
-
-            tailStart += commaIndex;
-        }
-
-
-        return arguments.ToArray();
-    }
-
-    private FilterComponent ParseFunction(string text)
-    {
-        var group = StringParser.ParseRecursiveGroups(text);
-        if (group.StartIndex == -1)
-            return new FilterComponent() { Type = EFilterType.Unknown };
-
-        var dotIndex = text.IndexOf('.');
-        var methodName = text.Substring(dotIndex + 1, group.StartIndex - 1);
-        var genericArg = string.Empty;
-
-        var genericStart = methodName.IndexOf('<');
-        var genericEnd = methodName.IndexOf('>');
-        if (genericStart != -1 && genericEnd != -1)
-        {
-            genericArg = methodName.Substring(genericStart + 1, genericEnd - genericStart - 1);
-            methodName = methodName.Substring(0, genericStart);
-        }
-
-        var methodType = GetFilterType(methodName);
-
-        var chain = new List<FilterComponent>();
-
-        var tailStart = group.EndIndex;
-        while (tailStart < text.Length)
-        {
-            var tailRaw = text.Substring(tailStart, text.Length - tailStart);
-            var body = StringParser.ParseRecursiveGroups(tailRaw);
-            if (body.StartIndex == -1)
-                break;
-
-            var tailPart = tailRaw.Substring(0, body.EndIndex);
-            tailStart += tailPart.Length;
-
-            chain.Add(ParseFunction(tailPart));
-        }
-
-        var children = ParseArguments(group.InnerText);
-
-        var parsed = new FilterComponent
-        {
-            GenericArg = genericArg,
-            Type = methodType,
-            Children = children
-        };
-
-        if (chain.Count > 0)
-        {
-            var parentChildren = new List<FilterComponent>
-            {
-                parsed
-            };
-            parentChildren.AddRange(chain);
-
-            var parent = new FilterComponent
-            {
-                Type = EFilterType.All,
-                Children = parentChildren.ToArray()
-            };
-
-            return parent;
-        }
-
-
-        return parsed;
-    }
-
-    private EFilterType GetFilterType(string str)
-    {
-        var type = str switch
-        {
-            "Any" => EFilterType.Any,
-            "All" => EFilterType.All,
-            "Not" => EFilterType.Not,
-            "Has" => EFilterType.Has,
-            "NotHas" => EFilterType.NotHas,
-            "Added" => EFilterType.Added,
-            "Removed" => EFilterType.Removed,
-            "AnyChanges" => EFilterType.AnyChanges,
-            _ => EFilterType.Unknown
-        };
-
-        return type;
-    }
-
-    public struct FilterComponent
-    {
-        public EFilterType Type;
-        public string GenericArg;
-        public FilterComponent[] Children;
-    }
-
-    public enum EFilterType
-    {
-        Unknown,
-        All,
-        Any,
-        Not,
-        Has,
-        NotHas,
-        Added,
-        Removed,
-        AnyChanges
+        context.AddSource("MatcherFilterRepository.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }

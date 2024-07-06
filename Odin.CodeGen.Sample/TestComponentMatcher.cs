@@ -18,6 +18,6 @@ public class Test2ComponentMatcher : AComponentMatcher
 {
     public override void Configure()
     {
-        Filter().Has<DestroyedComponent>();
+        Filter();
     }
 }
