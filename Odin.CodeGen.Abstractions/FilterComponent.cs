@@ -5,5 +5,5 @@ public struct FilterComponent
 {
     public EFilterType Type;
     public string GenericArg;
-    public FilterComponent[] Children;
+    public FilterComponent[]? Children;
 }

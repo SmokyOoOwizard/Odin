@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
-using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
 using Odin.CodeGen.Abstractions;
@@ -42,15 +41,6 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
             };
         }).ToArray();
 
-        var ids = processedMatchers
-                 .Select(c =>
-                  {
-                      var fullName = c.symbol.ToDisplayString();
-
-                      return $"case \"{fullName}\": return {c.id};";
-                  })
-                 .ToArray();
-
         var filterCases = processedMatchers.Select(c =>
         {
             var fullName = c.symbol.ToDisplayString().Replace('.', '_');
@@ -82,7 +72,7 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
                                       {
                                           if (component.Children == null || component.Children.Length == 0)
                                           {
-                                              return "true";
+                                              return "false";
                                           }
 
                                           var children = component.Children.Select(FilterToString).ToArray();
@@ -138,30 +128,9 @@ using Odin.Abstractions.Entities;
 using Odin.Abstractions.Collectors.Matcher;
 
 namespace {namespaceName};
-public static class MatcherFilterRepository
+public partial class MatcherFilterRepository
 {{
-    public static string GetMatcherJson(ulong matcherId)
-    {{
-        switch (matcherId)
-        {{
-            {string.Join("\n\t\t\t", processedMatchers.Select(c => $"case {c.id}: return \"{c.json.Replace("\"", "\\\"")}\";"))}
-            default: 
-                throw new Exception($""Matcher with id {{matcherId}} not found"");
-        }}
-    }}
-
-    public static ulong GetMatcherId<T>() where T : {nameof(AComponentMatcher)}
-    {{
-        var fullName = typeof(T).FullName;
-        switch (fullName)
-        {{
-            {string.Join("\n\t\t\t", ids)}
-            default: 
-                throw new Exception($""Matcher with type {{typeof(T).Name}} not found"");
-        }}
-    }}
-
-    public static Func<ulong, Func<ulong, ulong, bool>, {nameof(ComponentWrapper)}[], bool> GetFilter(ulong matcherId) 
+    public Func<ulong, Func<ulong, ulong, bool>, {nameof(ComponentWrapper)}[], bool> GetFilter(ulong matcherId) 
     {{
         switch (matcherId)
         {{
@@ -175,6 +144,6 @@ public static class MatcherFilterRepository
 }}
 ";
 
-        context.AddSource("MatcherFilterRepository.g.cs", SourceText.From(code, Encoding.UTF8));
+        context.AddSource("MatcherFilterRepository.Filters.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }
