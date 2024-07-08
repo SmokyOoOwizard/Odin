@@ -87,7 +87,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
 
     public bool HasMatcher<T>() where T : {nameof(AComponentMatcher)}
     {{
-        var fullName = typeof(T).FullName;
+        var fullName = typeof(T).GetFullName();
         switch (fullName)
         {{
             {string.Join("\n\t\t\t", hasNames)}
@@ -99,7 +99,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
 
     public ulong GetMatcherId<T>() where T : {nameof(AComponentMatcher)}
     {{
-        var fullName = typeof(T).FullName;
+        var fullName = typeof(T).GetFullName();
         switch (fullName)
         {{
             {string.Join("\n\t\t\t", ids)}

@@ -25,6 +25,14 @@ public static class TypeComponentUtils
         return hashCode;
     }
 
+    public static string? GetFullName(this Type type)
+    {
+        var fullName = type.FullName;
+        var name = fullName?.Replace("+", ".");
+
+        return name;
+    }
+
     public static ulong GetComponentTypeId(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
