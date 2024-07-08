@@ -6,5 +6,5 @@ public interface IEntityCollector
     
     ulong MatcherId { get; }
 
-    ICollectedEntitiesBatch GetBatch(bool clearAfterDispose);
+    ICollectedEntitiesBatch GetBatch();
 }

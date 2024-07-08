@@ -159,30 +159,12 @@ public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
         }
     }
 
-    public void Apply((ulong, ComponentWrapper[]) entity)
-    {
-        lock (_components)
-        {
-            if (!_components.TryGetValue(entity.Item1, out var components))
-                _components[entity.Item1] = components = new();
-
-            if (!_oldComponents.TryGetValue(entity.Item1, out var oldComponents))
-                _oldComponents[entity.Item1] = oldComponents = new();
-
-            foreach (var component in entity.Item2)
-            {
-                if (components.TryGetValue(component.TypeId, out var oldComponent))
-                    oldComponents[component.TypeId] = oldComponent;
-                components[component.TypeId] = component.Component;
-            }
-        }
-    }
-
     public void Clear()
     {
         lock (_components)
         {
             _components.Clear();
+            _oldComponents.Clear();
         }
     }
 }

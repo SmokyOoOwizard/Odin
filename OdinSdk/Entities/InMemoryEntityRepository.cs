@@ -1,4 +1,6 @@
-﻿using Odin.Abstractions.Components;
+﻿using Odin.Abstractions.Collectors;
+using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
 
@@ -6,12 +8,55 @@ namespace OdinSdk.Entities;
 
 public class InMemoryEntityRepository : IEntityRepository
 {
-    private ulong _lastId;
-    
+    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
+
+    // key - entity id, value - (key - component id, value - component)
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _oldComponents = new();
     private readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> _components = new();
-    
-    private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
+
+    // key - matcher id, value - (name, collector)
+    private readonly Dictionary<ulong, Dictionary<string, EntityCollector>> _collectors = new();
+
+    // key - collector name, value - matcher id
+    private readonly Dictionary<string, ulong> _collectorsToMatchers = new();
+
+    private ulong _lastId;
+
+    public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
+    {
+        var matcherId = MatchersRepository.GetMatcherId<T>();
+        if (!_collectors.TryGetValue(matcherId, out var collectors))
+        {
+            collectors = _collectors[matcherId] = new Dictionary<string, EntityCollector>();
+        }
+
+        if (collectors.ContainsKey(name))
+            throw new InvalidOperationException("Collector already exists.");
+
+        var collector = new EntityCollector(name, matcherId);
+
+        collectors[name] = collector;
+
+        _collectorsToMatchers[name] = matcherId;
+
+        return collector;
+    }
+
+    public void DeleteCollector(string name)
+    {
+        if (!_collectorsToMatchers.ContainsKey(name))
+            return;
+
+        var matcherId = _collectorsToMatchers[name];
+
+        var collectors = _collectors[matcherId];
+        collectors.Remove(name);
+
+        if (collectors.Count == 0)
+            _collectors.Remove(matcherId);
+
+        _collectorsToMatchers.Remove(name);
+    }
 
     public void Replace<T>(ulong entityId, T? component) where T : IComponent
     {
@@ -90,7 +135,7 @@ public class InMemoryEntityRepository : IEntityRepository
 
             if (rawComponent == null)
                 return false;
-            
+
             component = (T?)rawComponent;
 
             return true;
@@ -164,6 +209,12 @@ public class InMemoryEntityRepository : IEntityRepository
     {
         lock (_components)
         {
+            var matchers = _collectors.Select(c => new
+            {
+                id = c.Key,
+                filter = MatchersRepository.GetFilter(c.Key)
+            }).ToArray();
+
             foreach (var (id, changes) in entities)
             {
                 // tmp
@@ -187,35 +238,31 @@ public class InMemoryEntityRepository : IEntityRepository
                         oldComponents[component.TypeId] = oldComponent;
                     components[component.TypeId] = component.Component;
                 }
+
+                foreach (var matcher in matchers)
+                {
+                    if (matcher.filter(id, HasComponent, changes))
+                    {
+                        var collectors = _collectors[matcher.id];
+
+                        foreach (var (_, collector) in collectors)
+                        {
+                            collector.Add(id);
+                        }
+                    }
+                }
             }
         }
     }
 
-    public void Apply((ulong, ComponentWrapper[]) entity)
+    private bool HasComponent(ulong entityId, ulong componentId)
     {
-        lock (_components)
-        {
-            if (entity.Item2.Any(c => c.TypeId == _destroyedId))
-            {
-                _components.Remove(entity.Item1);
-                _oldComponents.Remove(entity.Item1);
-                return;
-            }
+        if (!_components.TryGetValue(entityId, out var components))
+            return false;
 
-            if (!_components.TryGetValue(entity.Item1, out var components))
-                _components[entity.Item1] = components = new();
-
-            if (!_oldComponents.TryGetValue(entity.Item1, out var oldComponents))
-                _oldComponents[entity.Item1] = oldComponents = new();
-
-            foreach (var component in entity.Item2)
-            {
-                if (components.TryGetValue(component.TypeId, out var oldComponent))
-                    oldComponents[component.TypeId] = oldComponent;
-                components[component.TypeId] = component.Component;
-            }
-        }
+        return components.ContainsKey(componentId);
     }
+
 
     public void Clear()
     {

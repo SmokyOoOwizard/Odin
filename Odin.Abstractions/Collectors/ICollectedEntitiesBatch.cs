@@ -1,8 +1,6 @@
 ﻿namespace Odin.Abstractions.Collectors;
 
-public interface ICollectedEntitiesBatch : IDisposable
+public interface ICollectedEntitiesBatch
 {
     IEnumerable<ulong> GetEntities();
-    
-    void DontDeleteEntity(ulong entity);
 }

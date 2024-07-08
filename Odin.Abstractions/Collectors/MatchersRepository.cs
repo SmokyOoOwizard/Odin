@@ -1,5 +1,4 @@
 ﻿using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Entities;
 
 namespace Odin.Abstractions.Collectors;
 
@@ -50,7 +49,7 @@ public static class MatchersRepository
         throw new Exception($"Matcher with id {id} not found");
     }
     
-    public static Func<ulong, Func<ulong, ulong, bool>, ComponentWrapper[], bool> GetFilter(ulong id)
+    public static FilterComponentDelegate GetFilter(ulong id)
     {
         foreach (var matcher in Matchers)
         {
