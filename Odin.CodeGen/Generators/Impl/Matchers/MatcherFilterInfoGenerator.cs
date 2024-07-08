@@ -79,7 +79,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
         switch (matcherId)
         {{
             {string.Join("\n\t\t\t", hasIds)}
-                return true;
+                {(hasIds.Any() ? "return true;" : "")}
             default: 
                 return false;
         }}
@@ -91,7 +91,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
         switch (fullName)
         {{
             {string.Join("\n\t\t\t", hasNames)}
-                return true;
+                {(hasNames.Any() ? "return true;" : "")}
             default: 
                 return false;
         }}
