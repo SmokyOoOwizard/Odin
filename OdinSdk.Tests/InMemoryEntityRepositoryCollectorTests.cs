@@ -1,11 +1,11 @@
 ﻿using Odin.Tests.Abstractions.Entities;
-using OdinSdk.Entities;
+using OdinSdk.Contexts;
 
 namespace OdinSdk.Tests;
 
-public class InMemoryEntityRepositoryCollectorTests : AEntityRepositoryCollectorTests
+public class InMemoryContextCollectorTests : AEntityRepositoryCollectorTests
 {
-    public InMemoryEntityRepositoryCollectorTests() : base(new InMemoryEntityRepository())
+    public InMemoryContextCollectorTests() : base(new InMemoryEntityContext(nameof(InMemoryContextCollectorTests)))
     {
     }
 }

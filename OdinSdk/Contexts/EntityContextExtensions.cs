@@ -1,10 +1,33 @@
-﻿using Odin.Abstractions.Contexts;
+﻿using Odin.Abstractions.Collectors;
+using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Contexts;
 using OdinSdk.Entities;
 
 namespace OdinSdk.Contexts;
 
 public static class EntityContextExtensions
 {
+    public static IEntityCollector CreateCollector<T>(this AEntityContext context, string name)
+        where T : AComponentMatcher
+    {
+        var rep = EntityContextsRepository.GetRepository(context.Id);
+        
+        if (rep == default)
+            throw new Exception($"No repository found for context {context.Id}");
+
+        return rep.CreateCollector<T>(name);
+    }
+
+    public static void DeleteCollector(this AEntityContext context, string name)
+    {
+        var rep = EntityContextsRepository.GetRepository(context.Id);
+        
+        if (rep == default)
+            throw new Exception($"No repository found for context {context.Id}");
+
+        rep.DeleteCollector(name);
+    }
+
     public static Entity CreateEntity(this AEntityContext context)
     {
         var rep = EntityContextsRepository.GetRepository(context.Id);
