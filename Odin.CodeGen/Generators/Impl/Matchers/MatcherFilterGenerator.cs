@@ -42,7 +42,6 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
                                              };
                                          })
                                         .GroupBy(c => c.id)
-                                        .Where(c=>c.Any())
                                         .Select(c => c.First())
                                         .ToArray();
 

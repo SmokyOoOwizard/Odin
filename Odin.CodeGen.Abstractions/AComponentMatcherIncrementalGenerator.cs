@@ -21,6 +21,7 @@ public abstract class AComponentMatcherIncrementalGenerator : ISourceGenerator
     public void Execute(GeneratorExecutionContext context)
     {
         var matchers = TypeUtils.GetAllTypes(context.Compilation)
+                                .Where(c => c.DeclaringSyntaxReferences.Length > 0)
                                 .Where(c =>
                                  {
                                      var baseType = c.BaseType;
