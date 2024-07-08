@@ -22,7 +22,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public ulong TestData;
     }
-    
+
     public struct TestComponent3 : IComponent
     {
         public ulong TestData;
@@ -60,7 +60,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
                          c => c.Has<TestComponent2>());
         }
     }
-    
+
     public class NotMatcher : AComponentMatcher
     {
         public override void Configure()
@@ -69,7 +69,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
                          c => c.Has<TestComponent2>());
         }
     }
-    
+
     public class AddedMatcher : AComponentMatcher
     {
         public override void Configure()
@@ -77,7 +77,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
             Filter().Added<TestComponent>();
         }
     }
-    
+
     public class RemovedMatcher : AComponentMatcher
     {
         public override void Configure()
@@ -85,7 +85,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
             Filter().Removed<TestComponent>();
         }
     }
-    
+
     public class AnyChangesMatcher : AComponentMatcher
     {
         public override void Configure()
@@ -94,11 +94,22 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
+    public class ComplexMatcher : AComponentMatcher
+    {
+        public override void Configure()
+        {
+            Filter().Any(
+                c => c.Has<TestComponent3>().Added<TestComponent>(),
+                c => c.Has<TestComponent2>().NotHas<TestComponent3>().Removed<TestComponent>()
+            );
+        }
+    }
+
     [Fact]
     public void HasMatcherTest()
     {
         var collector = Context.CreateCollector<HasMatcher>("Test");
-        
+
         Context.CreateEntity();
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
@@ -142,7 +153,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     public void NotHasMatcherTest()
     {
         var collector = Context.CreateCollector<NotHasMatcher>("Test");
-        
+
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
@@ -157,12 +168,12 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
-    
+
     [Fact]
     public void AllMatcherTest()
     {
         var collector = Context.CreateCollector<AllHasMatcher>("Test");
-        
+
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
@@ -178,12 +189,12 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
-    
+
     [Fact]
     public void AnyMatcherTest()
     {
         var collector = Context.CreateCollector<AnyHasMatcher>("Test");
-        
+
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
@@ -198,12 +209,12 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(2, entities.Length);
     }
-    
+
     [Fact]
     public void NotMatcherTest()
     {
         var collector = Context.CreateCollector<NotMatcher>("Test");
-        
+
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
@@ -220,11 +231,10 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
-    
+
     [Fact]
     public void AddedMatcherTest()
     {
-        
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
@@ -234,12 +244,12 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity3.Replace(new TestComponent3());
 
         EntityContexts.Save();
-        
+
         var collector = Context.CreateCollector<AddedMatcher>("Test");
-        
+
         entity2.Replace(new TestComponent());
         entity.Remove<TestComponent>();
-        
+
         EntityContexts.Save();
 
         var entities = collector.GetBatch()
@@ -248,11 +258,10 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
-    
+
     [Fact]
     public void RemovedMatcherTest()
     {
-        
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
@@ -262,12 +271,12 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity3.Replace(new TestComponent3());
 
         EntityContexts.Save();
-        
+
         var collector = Context.CreateCollector<RemovedMatcher>("Test");
-        
+
         entity2.Replace(new TestComponent());
         entity.Remove<TestComponent>();
-        
+
         EntityContexts.Save();
 
         var entities = collector.GetBatch()
@@ -276,11 +285,10 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
-    
+
     [Fact]
     public void AnyChangesMatcherTest()
     {
-        
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
@@ -290,12 +298,40 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity3.Replace(new TestComponent3());
 
         EntityContexts.Save();
-        
+
         var collector = Context.CreateCollector<AnyChangesMatcher>("Test");
-        
+
         entity2.Replace(new TestComponent());
         entity.Remove<TestComponent>();
-        
+
+        EntityContexts.Save();
+
+        var entities = collector.GetBatch()
+                                .GetEntities()
+                                .ToArray();
+
+        Assert.Equal(2, entities.Length);
+    }
+
+    [Fact]
+    public void ComplexMatcherTest()
+    {
+        var entity = Context.CreateEntity();
+        var entity2 = Context.CreateEntity();
+        var entity3 = Context.CreateEntity();
+
+        entity.Replace(new TestComponent3());
+        entity2.Replace(new TestComponent());
+        entity2.Replace(new TestComponent2());
+        entity3.Replace(new TestComponent3());
+
+        EntityContexts.Save();
+
+        var collector = Context.CreateCollector<ComplexMatcher>("Test");
+
+        entity.Replace(new TestComponent());
+        entity2.Remove<TestComponent>();
+
         EntityContexts.Save();
 
         var entities = collector.GetBatch()
