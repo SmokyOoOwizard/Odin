@@ -22,24 +22,29 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
         var namespaceName = context.Compilation.AssemblyName;
 
         var processedMatchers = matchers.Select(c =>
-        {
-            var json = JsonConvert.SerializeObject(c.Item2);
-            var id = TypeComponentUtils.GetComponentTypeId(json);
+                                         {
+                                             var json = JsonConvert.SerializeObject(c.Item2);
+                                             var id = TypeComponentUtils.GetComponentTypeId(json);
 
-            var parent = (ClassDeclarationSyntax)c.Item1.Parent!;
+                                             var parent = (ClassDeclarationSyntax)c.Item1.Parent!;
 
-            var semanticModel = context.Compilation.GetSemanticModel(c.Item1.SyntaxTree);
-            var typeSymbol = semanticModel.GetDeclaredSymbol(parent)!;
+                                             var semanticModel =
+                                                 context.Compilation.GetSemanticModel(c.Item1.SyntaxTree);
+                                             var typeSymbol = semanticModel.GetDeclaredSymbol(parent)!;
 
-            return new
-            {
-                json,
-                id,
-                filter = c.Item2,
-                syntax = c.Item1,
-                symbol = typeSymbol
-            };
-        }).ToArray();
+                                             return new
+                                             {
+                                                 json,
+                                                 id,
+                                                 filter = c.Item2,
+                                                 syntax = c.Item1,
+                                                 symbol = typeSymbol
+                                             };
+                                         })
+                                        .GroupBy(c => c.id)
+                                        .Where(c=>c.Any())
+                                        .Select(c => c.First())
+                                        .ToArray();
 
         var filterCases = processedMatchers.Select(c =>
         {

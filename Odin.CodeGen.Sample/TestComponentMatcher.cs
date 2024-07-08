@@ -21,3 +21,22 @@ public class Test2ComponentMatcher : AComponentMatcher
         Filter();
     }
 }
+
+public class WrapperComponentMatcher
+{
+    public class Test3ComponentMatcher : AComponentMatcher
+    {
+        public override void Configure()
+        {
+            Filter().Has<DestroyedComponent>();
+        }
+    }
+}
+
+public class Test4ComponentMatcher : AComponentMatcher
+{
+    public override void Configure()
+    {
+        Filter().Has<DestroyedComponent>();
+    }
+}
