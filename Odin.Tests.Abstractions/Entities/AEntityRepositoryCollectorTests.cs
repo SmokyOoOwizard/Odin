@@ -106,6 +106,33 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     }
 
     [Fact]
+    public void DeleteMatcherTest()
+    {
+        var collector = Context.CreateCollector<HasMatcher>("Test");
+
+        var entity = Context.CreateEntity();
+        var entity2 = Context.CreateEntity();
+        var entity3 = Context.CreateEntity();
+
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+
+        EntityContexts.Save();
+        
+        Context.DeleteCollector("Test");
+        
+        entity3.Replace(new Component());
+        
+        EntityContexts.Save();
+
+        var entities = collector.GetBatch()
+                                .GetEntities()
+                                .ToArray();
+
+        Assert.Equal(1, entities.Length);
+    }
+    
+    [Fact]
     public void HasMatcherTest()
     {
         var collector = Context.CreateCollector<HasMatcher>("Test");
