@@ -108,7 +108,7 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
                                   var condition = FilterToString(c.filter);
 
                                   return $@"
-    private static bool Filter_{fullName}(ulong entityId, Func<ulong, ulong, bool> coldStorage, {nameof(ComponentWrapper)}[] changes)
+    private static bool Filter_{fullName}(ulong entityId, HasComponentDelegate coldStorage, {nameof(ComponentWrapper)}[] changes)
     {{
         if ({condition})
             return true;
@@ -126,11 +126,12 @@ using System.Linq;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
 using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Collectors;
 
 namespace {namespaceName};
 public partial class MatcherFilterRepository
 {{
-    public Func<ulong, Func<ulong, ulong, bool>, {nameof(ComponentWrapper)}[], bool> GetFilter(ulong matcherId) 
+    public FilterComponentDelegate GetFilter(ulong matcherId) 
     {{
         switch (matcherId)
         {{
