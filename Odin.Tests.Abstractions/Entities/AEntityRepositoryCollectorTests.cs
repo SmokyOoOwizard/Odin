@@ -13,17 +13,17 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
     }
 
-    public struct TestComponent : IComponent
+    public struct Component : IComponent
     {
         public ulong TestData;
     }
 
-    public struct TestComponent2 : IComponent
+    public struct Component2 : IComponent
     {
         public ulong TestData;
     }
 
-    public struct TestComponent3 : IComponent
+    public struct Component3 : IComponent
     {
         public ulong TestData;
     }
@@ -32,7 +32,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Has<TestComponent>();
+            Filter().Has<Component>();
         }
     }
 
@@ -40,7 +40,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().NotHas<TestComponent>();
+            Filter().NotHas<Component>();
         }
     }
 
@@ -48,7 +48,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Has<TestComponent>().Has<TestComponent2>();
+            Filter().Has<Component>().Has<Component2>();
         }
     }
 
@@ -56,8 +56,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Any(c => c.Has<TestComponent>(),
-                         c => c.Has<TestComponent2>());
+            Filter().Any(c => c.Has<Component>(),
+                         c => c.Has<Component2>());
         }
     }
 
@@ -65,8 +65,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Not(c => c.Has<TestComponent>(),
-                         c => c.Has<TestComponent2>());
+            Filter().Not(c => c.Has<Component>(),
+                         c => c.Has<Component2>());
         }
     }
 
@@ -74,7 +74,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Added<TestComponent>();
+            Filter().Added<Component>();
         }
     }
 
@@ -82,7 +82,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().Removed<TestComponent>();
+            Filter().Removed<Component>();
         }
     }
 
@@ -90,7 +90,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
     {
         public override void Configure()
         {
-            Filter().AnyChanges<TestComponent>();
+            Filter().AnyChanges<Component>();
         }
     }
 
@@ -99,8 +99,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         public override void Configure()
         {
             Filter().Any(
-                c => c.Has<TestComponent3>().Added<TestComponent>(),
-                c => c.Has<TestComponent2>().NotHas<TestComponent3>().Removed<TestComponent>()
+                c => c.Has<Component3>().Added<Component>(),
+                c => c.Has<Component2>().NotHas<Component3>().Removed<Component>()
             );
         }
     }
@@ -114,8 +114,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
 
         EntityContexts.Save();
 
@@ -133,13 +133,13 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
 
         EntityContexts.Save();
         var collector = Context.CreateCollector<HasMatcher>("Test");
 
-        entity2.Replace(new TestComponent());
+        entity2.Replace(new Component());
         EntityContexts.Save();
 
         var entities = collector.GetBatch()
@@ -157,8 +157,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
 
         EntityContexts.Save();
 
@@ -177,9 +177,9 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity2.Replace(new TestComponent());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity2.Replace(new Component());
 
         EntityContexts.Save();
 
@@ -198,8 +198,8 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity = Context.CreateEntity();
         var entity2 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
 
         EntityContexts.Save();
 
@@ -219,9 +219,9 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity3.Replace(new TestComponent3());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity3.Replace(new Component3());
 
         EntityContexts.Save();
 
@@ -239,16 +239,16 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity3.Replace(new TestComponent3());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity3.Replace(new Component3());
 
         EntityContexts.Save();
 
         var collector = Context.CreateCollector<AddedMatcher>("Test");
 
-        entity2.Replace(new TestComponent());
-        entity.Remove<TestComponent>();
+        entity2.Replace(new Component());
+        entity.Remove<Component>();
 
         EntityContexts.Save();
 
@@ -266,16 +266,16 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity3.Replace(new TestComponent3());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity3.Replace(new Component3());
 
         EntityContexts.Save();
 
         var collector = Context.CreateCollector<RemovedMatcher>("Test");
 
-        entity2.Replace(new TestComponent());
-        entity.Remove<TestComponent>();
+        entity2.Replace(new Component());
+        entity.Remove<Component>();
 
         EntityContexts.Save();
 
@@ -293,16 +293,16 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity3.Replace(new TestComponent3());
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity3.Replace(new Component3());
 
         EntityContexts.Save();
 
         var collector = Context.CreateCollector<AnyChangesMatcher>("Test");
 
-        entity2.Replace(new TestComponent());
-        entity.Remove<TestComponent>();
+        entity2.Replace(new Component());
+        entity.Remove<Component>();
 
         EntityContexts.Save();
 
@@ -320,17 +320,17 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         var entity2 = Context.CreateEntity();
         var entity3 = Context.CreateEntity();
 
-        entity.Replace(new TestComponent3());
-        entity2.Replace(new TestComponent());
-        entity2.Replace(new TestComponent2());
-        entity3.Replace(new TestComponent3());
+        entity.Replace(new Component3());
+        entity2.Replace(new Component());
+        entity2.Replace(new Component2());
+        entity3.Replace(new Component3());
 
         EntityContexts.Save();
 
         var collector = Context.CreateCollector<ComplexMatcher>("Test");
 
-        entity.Replace(new TestComponent());
-        entity2.Remove<TestComponent>();
+        entity.Replace(new Component());
+        entity2.Remove<Component>();
 
         EntityContexts.Save();
 
