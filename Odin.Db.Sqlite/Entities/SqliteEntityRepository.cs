@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using Microsoft.Data.Sqlite;
+using Odin.Abstractions.Collectors;
+using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
@@ -115,6 +117,16 @@ public class SqliteEntityRepository : IEntityRepository
             deleter.Delete(_connection, entityId, _contextId, typeId, true);
         else
             writer.Write(_connection, entityId, _contextId, old, true);
+    }
+
+    public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteCollector(string name)
+    {
+        throw new NotImplementedException();
     }
 
     public ulong CreateEntity()
