@@ -29,6 +29,28 @@ public abstract class AContextChangesTests : ATestsWithContext
     }
 
     [Fact]
+    public void CreateManyEntities()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Context.CreateEntity();
+            EntityContexts.Save();
+        }
+
+        var entities = Context.GetEntities().ToArray();
+        Assert.Equal(10, entities.Length);
+
+        for (int i = 0; i < 10; i++)
+        {
+            Context.CreateEntity();
+        }
+
+        EntityContexts.Save();
+        var entities2 = Context.GetEntities().ToArray();
+        Assert.Equal(20, entities2.Length);
+    }
+
+    [Fact]
     public void DeleteEntity()
     {
         var entity = Context.CreateEntity();
@@ -57,7 +79,7 @@ public abstract class AContextChangesTests : ATestsWithContext
         Assert.Equal(2, entities.Length);
 
         Context.Clear();
-        
+
         var newEntities = Context.GetEntities().ToArray();
 
         Assert.Empty(newEntities);
