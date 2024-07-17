@@ -50,8 +50,12 @@ public class InMemoryEntityRepository : IEntityRepository
         var matcherId = _collectorsToMatchers[name];
 
         var collectors = _collectors[matcherId];
+        
+        var collector = collectors[name];
         collectors.Remove(name);
 
+        collector.Clear();
+        
         if (collectors.Count == 0)
             _collectors.Remove(matcherId);
 

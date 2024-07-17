@@ -33,4 +33,10 @@ internal class EntityCollector : IEntityCollector
 
         return p;
     }
+    
+    public void Clear()
+    {
+        _entityQueue.Clear();
+        _all.Clear();
+    }
 }
