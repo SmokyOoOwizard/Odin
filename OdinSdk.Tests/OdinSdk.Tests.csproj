@@ -23,6 +23,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Odin.CodeGen\Odin.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\Odin.Tests.Abstractions\Odin.Tests.Abstractions.csproj" />
+      <ProjectReference Include="..\Odin.Utils\Odin.Utils.csproj" />
       <ProjectReference Include="..\OdinSdk\OdinSdk.csproj" />
     </ItemGroup>
 
