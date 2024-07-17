@@ -7,9 +7,9 @@ internal class EntityCollector : IEntityCollector
     public string Name { get; init; }
     public ulong MatcherId { get; init; }
 
-    private HashSet<ulong> _all = new();
+    private readonly HashSet<ulong> _all = new();
 
-    private Queue<ulong> _ss = new();
+    private readonly Queue<ulong> _entityQueue = new();
 
     public EntityCollector(string name, ulong matcherId)
     {
@@ -22,13 +22,13 @@ internal class EntityCollector : IEntityCollector
         if (!_all.Add(entityId))
             return;
 
-        _ss.Enqueue(entityId);
+        _entityQueue.Enqueue(entityId);
     }
 
     public ICollectedEntitiesBatch GetBatch()
     {
-        var p = new CollectedEntitiesBatch(_ss.ToArray());
-        _ss.Clear();
+        var p = new CollectedEntitiesBatch(_entityQueue.ToArray());
+        _entityQueue.Clear();
         _all.Clear();
 
         return p;
