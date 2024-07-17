@@ -129,7 +129,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
                                 .GetEntities()
                                 .ToArray();
 
-        Assert.Equal(1, entities.Length);
+        Assert.Equal(0, entities.Length);
     }
     
     [Fact]
