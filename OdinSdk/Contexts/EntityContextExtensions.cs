@@ -27,6 +27,11 @@ public static class EntityContextExtensions
 
         rep.DeleteCollector(name);
     }
+    
+    public static void DisableCollector(this AEntityContext context, string name)
+    {
+        throw new NotImplementedException(); 
+    }
 
     public static Entity CreateEntity(this AEntityContext context)
     {
