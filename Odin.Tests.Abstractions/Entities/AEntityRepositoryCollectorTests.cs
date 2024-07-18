@@ -394,4 +394,31 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(2, entities.Length);
     }
+    
+    [Fact]
+    public void FewCollectorsWithSameMatcherTest()
+    {
+        var collector = Context.CreateCollector<HasMatcher>("Test");
+        var collector2 = Context.CreateCollector<HasMatcher>("Test2");
+
+        Context.CreateEntity();
+        var entity = Context.CreateEntity();
+        var entity2 = Context.CreateEntity();
+
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+
+        EntityContexts.Save();
+
+        var entities = collector.GetBatch()
+                                .GetEntities()
+                                .ToArray();
+        
+        var entities2 = collector2.GetBatch()
+                                .GetEntities()
+                                .ToArray();
+
+        Assert.Equal(1, entities.Length);
+        Assert.Equal(1, entities2.Length);
+    }
 }

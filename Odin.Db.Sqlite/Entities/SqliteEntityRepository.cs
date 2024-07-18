@@ -203,10 +203,11 @@ public class SqliteEntityRepository : IEntityRepository
         var writer = SqlCommands.GetWriter();
         var deleter = SqlCommands.GetDeleter();
 
-        var matchers = _collectors.Select(c => new
+        var matchers = _collectors.GroupBy(c => c.Value).Select(c => new
         {
-            id = c.Key,
-            filter = MatchersRepository.GetFilter(c.Value)
+            matcherId = c.Key,
+            collectors = c.Select(q => q.Key),
+            filter = MatchersRepository.GetFilter(c.Key)
         }).ToArray();
 
         foreach (var (id, changes) in entities)
@@ -236,7 +237,10 @@ public class SqliteEntityRepository : IEntityRepository
             {
                 if (matcher.filter(id, HasComponent, changes))
                 {
-                    SqlCollectorsUtils.AddEntityToCollector(_connection, _contextId, matcher.id, id);
+                    foreach (var collector in matcher.collectors)
+                    {
+                        SqlCollectorsUtils.AddEntityToCollector(_connection, _contextId, collector, id);
+                    }
                 }
             }
         }
