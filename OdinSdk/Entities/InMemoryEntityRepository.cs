@@ -44,10 +44,8 @@ public class InMemoryEntityRepository : IEntityRepository
 
     public void DeleteCollector(string name)
     {
-        if (!_collectorsToMatchers.ContainsKey(name))
+        if (!_collectorsToMatchers.TryGetValue(name, out var matcherId))
             return;
-
-        var matcherId = _collectorsToMatchers[name];
 
         var collectors = _collectors[matcherId];
         
