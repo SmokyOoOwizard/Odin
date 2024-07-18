@@ -60,7 +60,6 @@ public class InMemoryEntitiesChangedComponents : IEntityComponentsRepository
             if (!_components.TryGetValue(entityId, out var components))
                 return false;
 
-            // todo use utils for compute id*
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!components.TryGetValue(componentId, out var rawComponent))
                 return false;
