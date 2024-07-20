@@ -82,7 +82,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         }
     }
 
-    public void Apply(IEntitiesCollection entities)
+    public override void Apply(IEntitiesCollection entities)
     {
         lock (Components)
         {

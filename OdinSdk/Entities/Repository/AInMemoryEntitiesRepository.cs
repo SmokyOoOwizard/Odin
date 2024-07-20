@@ -1,11 +1,10 @@
 ﻿using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
-using OdinSdk.Entities.Repository.Impl;
 
 namespace OdinSdk.Entities.Repository;
 
-public abstract class AInMemoryEntitiesRepository : IReadOnlyEntityRepository
+public abstract class AInMemoryEntitiesRepository : IEntityComponentsRepository
 {
     protected readonly ulong ContextId;
 
@@ -64,6 +63,8 @@ public abstract class AInMemoryEntitiesRepository : IReadOnlyEntityRepository
             components[componentId] = null;
         }
     }
+
+    public abstract void Apply(IEntitiesCollection entities);
 
     public virtual bool Get<T>(Entity entity, out T? component) where T : IComponent
     {

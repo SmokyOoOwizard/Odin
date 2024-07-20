@@ -8,7 +8,7 @@ public class InMemoryEntitiesChangedComponentsRepository : AInMemoryEntitiesRepo
     {
     }
 
-    public void Apply(IEntitiesCollection entities)
+    public override void Apply(IEntitiesCollection entities)
     {
         lock (Components)
         {
