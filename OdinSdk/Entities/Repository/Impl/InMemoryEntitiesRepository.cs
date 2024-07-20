@@ -8,6 +8,7 @@ namespace OdinSdk.Entities.Repository.Impl;
 
 public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRepository
 {
+    private readonly ulong _contextId;
     private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
     // key - matcher id, value - (name, collector)
@@ -17,6 +18,11 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     private readonly Dictionary<string, ulong> _collectorsToMatchers = new();
 
     private ulong _lastId;
+
+    public InMemoryEntitiesRepository(ulong contextId)
+    {
+        _contextId = contextId;
+    }
 
     public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
     {
@@ -57,20 +63,22 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     }
 
 
-    public ulong CreateEntity()
+    public Entity CreateEntity()
     {
         lock (Components)
         {
             _lastId++;
             Components[_lastId] = new();
-            return _lastId;
+            return new Entity(new(_lastId, _contextId));
         }
     }
 
-    public void DestroyEntity(ulong entityId)
+    public void DestroyEntity(Entity entity)
     {
         lock (Components)
         {
+            var entityId = entity.Id.Id;
+            
             Components.Remove(entityId);
             OldComponents.Remove(entityId);
         }

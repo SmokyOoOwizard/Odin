@@ -40,9 +40,9 @@ public static class EntityContextExtensions
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
-        var id = rep.CreateEntity();
+        var entity = rep.CreateEntity();
 
-        return new Entity(new(id, context.Id));
+        return entity;
     }
 
     public static IEnumerable<Entity> GetEntities(this AEntityContext context)

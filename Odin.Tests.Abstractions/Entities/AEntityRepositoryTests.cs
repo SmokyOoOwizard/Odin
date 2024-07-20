@@ -95,14 +95,14 @@ public abstract class AEntityRepositoryTests
     {
         var entity = _repository.CreateEntity();
 
-        var id = entity;
+        var id = entity.Id.Id;
 
         Assert.True(id > 0);
 
         var entities = _repository.GetEntities().ToArray();
 
         Assert.Single(entities);
-        Assert.Equal(entity, entities[0]);
+        Assert.Equal(id, entities[0]);
     }
 
     [Fact]

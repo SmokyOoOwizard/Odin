@@ -10,10 +10,12 @@ public abstract class AInMemoryEntitiesRepository
     protected readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> OldComponents = new();
     protected readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> Components = new();
 
-    public virtual void Replace<T>(ulong entityId, T? component) where T : IComponent
+    public virtual void Replace<T>(Entity entity, T? component) where T : IComponent
     {
         lock (Components)
         {
+            var entityId = entity.Id.Id;
+            
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!Components.TryGetValue(entityId, out var components))
                 Components[entityId] = components = new();
@@ -31,10 +33,12 @@ public abstract class AInMemoryEntitiesRepository
         }
     }
 
-    public virtual void Remove<T>(ulong entityId) where T : IComponent
+    public virtual void Remove<T>(Entity entity) where T : IComponent
     {
         lock (Components)
         {
+            var entityId = entity.Id.Id;
+            
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
 
             if (!Components.TryGetValue(entityId, out var components))
@@ -53,11 +57,13 @@ public abstract class AInMemoryEntitiesRepository
         }
     }
 
-    public virtual bool Get<T>(ulong entityId, out T? component) where T : IComponent
+    public virtual bool Get<T>(Entity entity, out T? component) where T : IComponent
     {
         component = default;
         lock (Components)
         {
+            var entityId = entity.Id.Id;
+                
             if (!Components.TryGetValue(entityId, out var components))
                 return false;
 
@@ -74,11 +80,13 @@ public abstract class AInMemoryEntitiesRepository
         }
     }
 
-    public virtual bool GetOld<T>(ulong entityId, out T? component) where T : IComponent
+    public virtual bool GetOld<T>(Entity entity, out T? component) where T : IComponent
     {
         component = default;
         lock (Components)
         {
+            var entityId = entity.Id.Id;
+            
             if (!OldComponents.TryGetValue(entityId, out var components))
                 return false;
 

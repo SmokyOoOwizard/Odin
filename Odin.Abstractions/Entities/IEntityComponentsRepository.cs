@@ -4,8 +4,8 @@ namespace Odin.Abstractions.Entities;
 
 public interface IEntityComponentsRepository : IReadOnlyEntityRepository
 {
-    void Replace<T>(ulong entityId, T? component) where T : IComponent;
-    void Remove<T>(ulong entityId) where T : IComponent;
+    void Replace<T>(Entity entity, T? component) where T : IComponent;
+    void Remove<T>(Entity entity) where T : IComponent;
     
     void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities);
 
