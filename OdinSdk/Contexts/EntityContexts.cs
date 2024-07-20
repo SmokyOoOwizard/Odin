@@ -47,7 +47,7 @@ public static class EntityContexts
                 Contexts.Value = new();
                 val = Contexts.Value;
             }
-            
+
             if (!val.TryGetValue(id, out var context))
             {
                 context = new()

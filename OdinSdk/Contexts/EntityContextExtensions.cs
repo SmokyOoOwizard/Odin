@@ -2,6 +2,7 @@
 using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Contexts;
 using Odin.Abstractions.Entities;
+using OdinSdk.Entities.Repository.Impl;
 
 namespace OdinSdk.Contexts;
 
@@ -41,8 +42,13 @@ public static class EntityContextExtensions
             throw new Exception($"No repository found for context {context.Id}");
 
         var entity = rep.CreateEntity();
+        var changes = new ReferenceInMemoryChangedComponentsRepository(context.Id);
 
-        return entity;
+        return new Entity(
+            entity.Id,
+            entity.Components,
+            changes
+        );
     }
 
     public static IEnumerable<Entity> GetEntities(this AEntityContext context)
@@ -51,10 +57,16 @@ public static class EntityContextExtensions
 
         if (rep == default)
             yield break;
+        
+        var changes = new ReferenceInMemoryChangedComponentsRepository(context.Id);
 
         foreach (var entity in rep.GetEntities())
         {
-            yield return entity;
+            yield return new(
+                entity.Id,
+                entity.Components,
+                changes
+            );
         }
     }
 

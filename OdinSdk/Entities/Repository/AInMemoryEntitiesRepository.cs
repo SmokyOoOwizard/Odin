@@ -115,8 +115,14 @@ public abstract class AInMemoryEntitiesRepository : IReadOnlyEntityRepository
     {
         lock (Components)
         {
-            var entities = Components.Keys.ToArray();
-            return new InMemoryEntitiesCollection(entities, ContextId, this);
+            var entities = Components.Keys
+                                     .Select(id => new Entity(
+                                                 new EntityId(id, ContextId),
+                                                 this,
+                                                 this
+                                             )).ToArray();
+
+            return new InMemoryEntitiesCollection(entities);
         }
     }
 

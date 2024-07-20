@@ -67,7 +67,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         {
             _lastId++;
             Components[_lastId] = new();
-            return new Entity(new(_lastId, ContextId), this);
+            return new Entity(new(_lastId, ContextId), this, this);
         }
     }
 
