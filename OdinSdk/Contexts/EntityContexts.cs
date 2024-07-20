@@ -1,5 +1,5 @@
 ﻿using Odin.Abstractions.Contexts;
-using OdinSdk.Components.Impl;
+using OdinSdk.Entities.Repository.Impl;
 
 namespace OdinSdk.Contexts;
 
@@ -52,7 +52,7 @@ public static class EntityContexts
             {
                 context = new()
                 {
-                    Changes = new InMemoryEntitiesChangedComponents()
+                    Changes = new InMemoryEntitiesChangedComponentsRepository()
                 };
 
                 val[id] = context;
