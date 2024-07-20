@@ -1,21 +1,29 @@
 ﻿using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
+using OdinSdk.Entities.Repository.Impl;
 
 namespace OdinSdk.Entities.Repository;
 
-public abstract class AInMemoryEntitiesRepository
+public abstract class AInMemoryEntitiesRepository : IReadOnlyEntityRepository
 {
+    protected readonly ulong ContextId;
+
     // key - entity id, value - (key - component id, value - component)
     protected readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> OldComponents = new();
     protected readonly Dictionary<ulong, Dictionary<ulong, IComponent?>> Components = new();
+
+    protected AInMemoryEntitiesRepository(ulong contextId)
+    {
+        ContextId = contextId;
+    }
 
     public virtual void Replace<T>(Entity entity, T? component) where T : IComponent
     {
         lock (Components)
         {
             var entityId = entity.Id.Id;
-            
+
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
             if (!Components.TryGetValue(entityId, out var components))
                 Components[entityId] = components = new();
@@ -38,7 +46,7 @@ public abstract class AInMemoryEntitiesRepository
         lock (Components)
         {
             var entityId = entity.Id.Id;
-            
+
             var componentId = TypeComponentUtils.GetComponentTypeId<T>();
 
             if (!Components.TryGetValue(entityId, out var components))
@@ -63,7 +71,7 @@ public abstract class AInMemoryEntitiesRepository
         lock (Components)
         {
             var entityId = entity.Id.Id;
-                
+
             if (!Components.TryGetValue(entityId, out var components))
                 return false;
 
@@ -86,7 +94,7 @@ public abstract class AInMemoryEntitiesRepository
         lock (Components)
         {
             var entityId = entity.Id.Id;
-            
+
             if (!OldComponents.TryGetValue(entityId, out var components))
                 return false;
 
@@ -102,46 +110,32 @@ public abstract class AInMemoryEntitiesRepository
             return true;
         }
     }
-    
-    public IEnumerable<(ulong, ComponentWrapper[])> GetEntitiesWithComponents()
+
+    public IEntitiesCollection GetEntities()
     {
-        ulong[] entities;
         lock (Components)
         {
-            entities = Components.Keys.ToArray();
-        }
-
-        foreach (var entityId in entities)
-        {
-            lock (Components)
-            {
-                if (!Components.TryGetValue(entityId, out var components))
-                    continue;
-
-                var componentsArray = components.Select(c => new ComponentWrapper(c.Key, c.Value)).ToArray();
-
-                yield return (entityId, componentsArray);
-            }
+            var entities = Components.Keys.ToArray();
+            return new InMemoryEntitiesCollection(entities, ContextId, this);
         }
     }
-    
-    public IEnumerable<ulong> GetEntities()
+
+    public ComponentWrapper[] GetComponents(Entity entity)
     {
-        ulong[] entities;
         lock (Components)
         {
-            entities = Components.Keys.ToArray();
-        }
+            var entityId = entity.Id.Id;
 
-        foreach (var entityId in entities)
-        {
-            lock (Components)
-            {
-                if (!Components.ContainsKey(entityId))
-                    continue;
+            if (!Components.TryGetValue(entityId, out var components))
+                return Array.Empty<ComponentWrapper>();
 
-                yield return entityId;
-            }
+            return components
+                  .Select(c => new ComponentWrapper
+                   {
+                       TypeId = c.Key,
+                       Component = c.Value
+                   })
+                  .ToArray();
         }
     }
 

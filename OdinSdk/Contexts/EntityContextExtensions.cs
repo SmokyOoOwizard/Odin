@@ -52,9 +52,9 @@ public static class EntityContextExtensions
         if (rep == default)
             yield break;
 
-        foreach (var entityId in rep.GetEntities())
+        foreach (var entity in rep.GetEntities())
         {
-            yield return new Entity(new(entityId, context.Id));
+            yield return entity;
         }
     }
 

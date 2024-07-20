@@ -8,7 +8,6 @@ namespace OdinSdk.Entities.Repository.Impl;
 
 public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRepository
 {
-    private readonly ulong _contextId;
     private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
     // key - matcher id, value - (name, collector)
@@ -19,9 +18,8 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
 
     private ulong _lastId;
 
-    public InMemoryEntitiesRepository(ulong contextId)
+    public InMemoryEntitiesRepository(ulong contextId) : base(contextId)
     {
-        _contextId = contextId;
     }
 
     public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
@@ -69,7 +67,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         {
             _lastId++;
             Components[_lastId] = new();
-            return new Entity(new(_lastId, _contextId));
+            return new Entity(new(_lastId, ContextId), this);
         }
     }
 
@@ -78,13 +76,13 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         lock (Components)
         {
             var entityId = entity.Id.Id;
-            
+
             Components.Remove(entityId);
             OldComponents.Remove(entityId);
         }
     }
 
-    public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
+    public void Apply(IEntitiesCollection entities)
     {
         lock (Components)
         {
@@ -94,8 +92,11 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                 filter = MatchersRepository.GetFilter(c.Key)
             }).ToArray();
 
-            foreach (var (id, changes) in entities)
+            foreach (var entity in entities)
             {
+                var id = entity.Id.Id;
+
+                var changes = entity.Components.GetComponents(entity);
                 // tmp
                 if (changes.Any(c => c.TypeId == _destroyedId))
                 {

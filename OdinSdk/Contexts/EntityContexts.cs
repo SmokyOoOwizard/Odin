@@ -32,7 +32,7 @@ public static class EntityContexts
             {
                 var rep = EntityContextsRepository.GetRepository(key);
 
-                rep?.Apply(contextLocal.Changes.GetEntitiesWithComponents());
+                rep?.Apply(contextLocal.Changes.GetEntities());
             }
         }
     }
@@ -52,7 +52,7 @@ public static class EntityContexts
             {
                 context = new()
                 {
-                    Changes = new InMemoryEntitiesChangedComponentsRepository()
+                    Changes = new InMemoryEntitiesChangedComponentsRepository(id)
                 };
 
                 val[id] = context;

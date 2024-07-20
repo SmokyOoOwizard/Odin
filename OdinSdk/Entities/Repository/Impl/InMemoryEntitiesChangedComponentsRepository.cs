@@ -4,19 +4,27 @@ namespace OdinSdk.Entities.Repository.Impl;
 
 public class InMemoryEntitiesChangedComponentsRepository : AInMemoryEntitiesRepository, IEntityComponentsRepository
 {
-    public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
+    public InMemoryEntitiesChangedComponentsRepository(ulong contextId) : base(contextId)
+    {
+    }
+
+    public void Apply(IEntitiesCollection entities)
     {
         lock (Components)
         {
             foreach (var entity in entities)
             {
-                if (!Components.TryGetValue(entity.Item1, out var components))
-                    Components[entity.Item1] = components = new();
+                var entityId = entity.Id.Id;
+                
+                var changes = entity.Components.GetComponents(entity);
+                
+                if (!Components.TryGetValue(entityId, out var components))
+                    Components[entityId] = components = new();
 
-                if (!OldComponents.TryGetValue(entity.Item1, out var oldComponents))
-                    OldComponents[entity.Item1] = oldComponents = new();
+                if (!OldComponents.TryGetValue(entityId, out var oldComponents))
+                    OldComponents[entityId] = oldComponents = new();
 
-                foreach (var component in entity.Item2)
+                foreach (var component in changes)
                 {
                     if (components.TryGetValue(component.TypeId, out var oldComponent))
                         oldComponents[component.TypeId] = oldComponent;

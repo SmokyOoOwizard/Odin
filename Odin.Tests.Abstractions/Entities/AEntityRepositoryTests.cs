@@ -102,7 +102,7 @@ public abstract class AEntityRepositoryTests
         var entities = _repository.GetEntities().ToArray();
 
         Assert.Single(entities);
-        Assert.Equal(id, entities[0]);
+        Assert.Equal(entity, entities[0]);
     }
 
     [Fact]
