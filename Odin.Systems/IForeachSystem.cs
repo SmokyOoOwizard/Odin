@@ -1,4 +1,5 @@
-﻿using OdinSdk.Entities;
+﻿using Odin.Abstractions.Entities;
+using OdinSdk.Entities;
 
 namespace Odin.Systems;
 

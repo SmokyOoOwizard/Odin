@@ -1,5 +1,7 @@
 ﻿using Odin.Abstractions.Components;
-using OdinSdk.Entities;
+using Odin.Abstractions.Contexts;
+using Odin.Abstractions.Entities;
+using OdinSdk.Contexts;
 
 namespace OdinSdk.Components;
 
@@ -7,43 +9,58 @@ public static class EntityComponentsExtensions
 {
     public static T? Get<T>(this Entity entity) where T : IComponent
     {
-        if (entity.HotComponents.Get<T>(entity.Id.Id, out var hotComponent))
+        var changes = EntityContexts.GetContext(entity.Id.ContextId).Changes;
+        if (changes.Get<T>(entity.Id.Id, out var hotComponent))
             return hotComponent;
 
-        entity.ColdComponents.Get<T>(entity.Id.Id, out var coldComponent);
+        var rep = EntityContextsRepository.GetRepository(entity.Id.ContextId);
+
+        T? coldComponent = default;
+        rep?.Get(entity.Id.Id, out coldComponent);
 
         return coldComponent;
     }
 
     public static T? GetOld<T>(this Entity entity) where T : IComponent
     {
-        entity.ColdComponents.GetOld<T>(entity.Id.Id, out var oldComponent);
+        var rep = EntityContextsRepository.GetRepository(entity.Id.ContextId);
 
-        return oldComponent;
+        T? coldComponent = default;
+        rep?.GetOld(entity.Id.Id, out coldComponent);
+
+        return coldComponent;
     }
 
     public static void Replace<T>(this Entity entity, T component) where T : IComponent
     {
-        entity.HotComponents.Replace(entity.Id.Id, component);
+        var changes = EntityContexts.GetContext(entity.Id.ContextId).Changes;
+        changes.Replace(entity.Id.Id, component);
     }
 
     public static void Remove<T>(this Entity entity) where T : IComponent
     {
-        entity.HotComponents.Remove<T>(entity.Id.Id);
+        var changes = EntityContexts.GetContext(entity.Id.ContextId).Changes;
+        changes.Remove<T>(entity.Id.Id);
     }
 
     public static bool Has<T>(this Entity entity) where T : IComponent
     {
-        if (entity.HotComponents.Get<T>(entity.Id.Id, out var hotComponent))
+        var changes = EntityContexts.GetContext(entity.Id.ContextId).Changes;
+        if (changes.Get<T>(entity.Id.Id, out var hotComponent))
             return hotComponent != null;
 
-        var hasComponent = entity.ColdComponents.Get<T>(entity.Id.Id, out var coldComponent);
+        var rep = EntityContextsRepository.GetRepository(entity.Id.ContextId);
+        if (rep == default)
+            return false;
+
+        var hasComponent = rep.Get<T>(entity.Id.Id, out var coldComponent);
 
         return hasComponent && coldComponent != null;
     }
 
     public static void Destroy(this Entity entity)
     {
-        entity.HotComponents.Replace(entity.Id.Id, default(DestroyedComponent));
+        var changes = EntityContexts.GetContext(entity.Id.ContextId).Changes;
+        changes.Replace(entity.Id.Id, default(DestroyedComponent));
     }
 }

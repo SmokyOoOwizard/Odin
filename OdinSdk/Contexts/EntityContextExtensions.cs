@@ -1,7 +1,7 @@
 ﻿using Odin.Abstractions.Collectors;
 using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Contexts;
-using OdinSdk.Entities;
+using Odin.Abstractions.Entities;
 
 namespace OdinSdk.Contexts;
 
@@ -11,7 +11,7 @@ public static class EntityContextExtensions
         where T : AComponentMatcher
     {
         var rep = EntityContextsRepository.GetRepository(context.Id);
-        
+
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
@@ -21,16 +21,16 @@ public static class EntityContextExtensions
     public static void DeleteCollector(this AEntityContext context, string name)
     {
         var rep = EntityContextsRepository.GetRepository(context.Id);
-        
+
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
         rep.DeleteCollector(name);
     }
-    
+
     public static void DisableCollector(this AEntityContext context, string name)
     {
-        throw new NotImplementedException(); 
+        throw new NotImplementedException();
     }
 
     public static Entity CreateEntity(this AEntityContext context)
@@ -42,11 +42,7 @@ public static class EntityContextExtensions
 
         var id = rep.CreateEntity();
 
-        return new Entity
-        {
-            Id = new EntityId(id, context.Id),
-            ColdComponents = rep,
-        };
+        return new Entity(new(id, context.Id));
     }
 
     public static IEnumerable<Entity> GetEntities(this AEntityContext context)
@@ -58,11 +54,7 @@ public static class EntityContextExtensions
 
         foreach (var entityId in rep.GetEntities())
         {
-            yield return new Entity
-            {
-                Id = new(entityId, context.Id),
-                ColdComponents = rep,
-            };
+            yield return new Entity(new(entityId, context.Id));
         }
     }
 
