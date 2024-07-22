@@ -138,15 +138,18 @@ public abstract class AInMemoryEntitiesRepository : IEntityComponentsRepository
         }
     }
 
-    public IEntitiesCollection GetEntities()
+    public IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default)
     {
         lock (Components)
         {
+            if (changes == default)
+                changes = this;
+            
             var entities = Components.Keys
                                      .Select(id => new Entity(
                                                  new EntityId(id, ContextId),
                                                  this,
-                                                 this
+                                                 changes
                                              )).ToArray();
 
             return new InMemoryEntitiesCollection(entities);

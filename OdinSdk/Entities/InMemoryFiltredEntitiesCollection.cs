@@ -5,19 +5,37 @@ using Odin.Abstractions.Entities;
 
 namespace OdinSdk.Entities;
 
-public class InMemoryEntitiesCollection : IEntitiesCollection
+public class InMemoryFiltredEntitiesCollection : IEntitiesCollection
 {
-    private readonly Entity[] _entities;
+    private readonly IEntitiesCollection _entities;
+    private readonly FilterComponentDelegate[] _filters;
 
-    public InMemoryEntitiesCollection(Entity[] entities)
+    public InMemoryFiltredEntitiesCollection(
+        IEntitiesCollection entities,
+        FilterComponentDelegate[] filters
+    )
     {
         _entities = entities;
+        _filters = filters;
     }
 
     public IEnumerator<Entity> GetEnumerator()
     {
         foreach (var entity in _entities)
         {
+            var allFiltersMatch = true;
+            foreach (var filter in _filters)
+            {
+                if (!filter(entity))
+                {
+                    allFiltersMatch = false;
+                    break;
+                }
+            }
+
+            if (!allFiltersMatch)
+                continue;
+
             yield return entity;
         }
     }

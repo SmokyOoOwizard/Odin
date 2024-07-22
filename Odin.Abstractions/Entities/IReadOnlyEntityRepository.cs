@@ -11,6 +11,6 @@ public interface IReadOnlyEntityRepository
     bool GetOld<T>(Entity entity, out T? component) where T : IComponent;
     
     ComponentWrapper[] GetComponents(Entity entity);
-    
-    IEntitiesCollection GetEntities();
+
+    IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default);
 }

@@ -51,23 +51,16 @@ public static class EntityContextExtensions
         );
     }
 
-    public static IEnumerable<Entity> GetEntities(this AEntityContext context)
+    public static IEntitiesCollection GetEntities(this AEntityContext context)
     {
         var rep = EntityContextsRepository.GetRepository(context.Id);
 
         if (rep == default)
-            yield break;
+            return null;
         
         var changes = new ReferenceInMemoryChangedComponentsRepository(context.Id);
 
-        foreach (var entity in rep.GetEntities())
-        {
-            yield return new(
-                entity.Id,
-                entity.Components,
-                changes
-            );
-        }
+        return rep.GetEntities(changes);
     }
 
     public static void Clear(this AEntityContext context)

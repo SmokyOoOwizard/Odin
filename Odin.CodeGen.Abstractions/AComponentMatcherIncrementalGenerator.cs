@@ -7,7 +7,7 @@ namespace Odin.CodeGen.Abstractions;
 
 public abstract class AComponentMatcherIncrementalGenerator : ISourceGenerator
 {
-    private static readonly string ComponentMatcherBaseName = typeof(AReactiveComponentMatcher).FullName!;
+    private static readonly string ComponentMatcherBaseName = typeof(AComponentMatcherBase).FullName!;
 
     protected abstract void GenerateCode(
         GeneratorExecutionContext context,
@@ -48,7 +48,7 @@ public abstract class AComponentMatcherIncrementalGenerator : ISourceGenerator
                                 .Select(c =>
                                  {
                                      var members = c.GetMembers()
-                                                    .First(q => q.Name == nameof(AReactiveComponentMatcher.Configure) &&
+                                                    .First(q => q.Name == nameof(AComponentMatcherBase.Configure) &&
                                                                 q is IMethodSymbol);
 
 

@@ -48,11 +48,11 @@ internal class ReferenceInMemoryChangedComponentsRepository : IEntityComponentsR
         return changes.GetComponents(entity);
     }
 
-    public IEntitiesCollection GetEntities()
+    public IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default)
     {
-        var changes = EntityContexts.GetContext(_contextId).Changes;
+        var rep = EntityContexts.GetContext(_contextId).Changes;
 
-        return changes.GetEntities();
+        return rep.GetEntities(changes);
     }
 
     public void Replace<T>(Entity entity, T? component) where T : IComponent

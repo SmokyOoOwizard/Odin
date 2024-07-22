@@ -2,7 +2,8 @@
 
 namespace Odin.Abstractions.Entities;
 
-public interface IEntitiesCollection : IEnumerable<Entity>
+public interface IRawEntitiesCollection
 {
     IRawEntitiesCollection Filter<T>() where T : AComponentMatcher;
+    IEntitiesCollection Build();
 }
