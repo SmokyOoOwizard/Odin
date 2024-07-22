@@ -125,7 +125,7 @@ public class SqliteEntityRepository : IEntityRepository
             writer.Write(_connection, entityId, _contextId, old, true);
     }
 
-    public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
+    public IEntityCollector CreateOrGetCollector<T>(string name) where T : AComponentMatcher
     {
         var matcherId = MatchersRepository.GetMatcherId<T>();
 

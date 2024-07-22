@@ -104,7 +104,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
             );
         }
     }
-    
+
     [Fact]
     public void DisableMatcherTest()
     {
@@ -118,11 +118,11 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity2.Replace(new Component2());
 
         EntityContexts.Save();
-        
+
         Context.DisableCollector("Test");
-        
+
         entity3.Replace(new Component());
-        
+
         EntityContexts.Save();
 
         var entities = collector.GetEntities()
@@ -144,11 +144,11 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity2.Replace(new Component2());
 
         EntityContexts.Save();
-        
+
         Context.DeleteCollector("Test");
-        
+
         entity3.Replace(new Component());
-        
+
         EntityContexts.Save();
 
         var entities = collector.GetEntities()
@@ -156,7 +156,37 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(0, entities.Length);
     }
-    
+
+
+    [Fact]
+    public void GetAlreadyCreatedMatcherTest()
+    {
+        Context.CreateCollector<HasMatcher>("Test");
+
+        var entity = Context.CreateEntity();
+        var entity2 = Context.CreateEntity();
+        var entity3 = Context.CreateEntity();
+
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+
+        EntityContexts.Save();
+
+        Context.DeleteCollector("Test");
+
+        entity3.Replace(new Component());
+
+        EntityContexts.Save();
+
+        var collector = Context.CreateCollector<HasMatcher>("Test");
+
+        var entities = collector.GetEntities()
+                                .ToArray();
+
+        Assert.Equal(0, entities.Length);
+    }
+
+
     [Fact]
     public void HasMatcherTest()
     {
@@ -382,7 +412,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         Assert.Equal(2, entities.Length);
     }
-    
+
     [Fact]
     public void FewCollectorsWithSameMatcherTest()
     {
@@ -400,9 +430,9 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         var entities = collector.GetEntities()
                                 .ToArray();
-        
+
         var entities2 = collector2.GetEntities()
-                                .ToArray();
+                                  .ToArray();
 
         Assert.Equal(1, entities.Length);
         Assert.Equal(1, entities2.Length);

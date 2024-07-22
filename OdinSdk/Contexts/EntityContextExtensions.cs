@@ -16,7 +16,7 @@ public static class EntityContextExtensions
         if (rep == default)
             throw new Exception($"No repository found for context {context.Id}");
 
-        return rep.CreateCollector<T>(name);
+        return rep.CreateOrGetCollector<T>(name);
     }
 
     public static void DeleteCollector(this AEntityContext context, string name)

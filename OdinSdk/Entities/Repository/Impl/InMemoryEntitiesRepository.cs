@@ -22,10 +22,17 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     {
     }
 
-    public IEntityCollector CreateCollector<T>(string name) where T : AComponentMatcher
+    public IEntityCollector CreateOrGetCollector<T>(string name) where T : AComponentMatcher
     {
-        var matcherId = MatchersRepository.GetMatcherId<T>();
-        if (!_collectors.TryGetValue(matcherId, out var collectors))
+        if (_collectorsToMatchers.TryGetValue(name, out var matcherId)
+         && _collectors.TryGetValue(matcherId, out var collectors)
+         && collectors.TryGetValue(name, out var collector))
+        {
+            return collector;
+        }
+
+        matcherId = MatchersRepository.GetMatcherId<T>();
+        if (!_collectors.TryGetValue(matcherId, out collectors))
         {
             collectors = _collectors[matcherId] = new Dictionary<string, EntityCollector>();
         }
@@ -33,7 +40,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         if (collectors.ContainsKey(name))
             throw new InvalidOperationException("Collector already exists.");
 
-        var collector = new EntityCollector(name, matcherId, this);
+        collector = new EntityCollector(name, matcherId, this);
 
         collectors[name] = collector;
 
@@ -41,6 +48,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
 
         return collector;
     }
+
 
     public void DeleteCollector(string name)
     {
@@ -70,10 +78,10 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
             {
                 if (!Components.ContainsKey(id))
                     continue;
-                
+
                 entities.Add(new Entity(new EntityId(id, ContextId), this, this));
             }
-            
+
             return new InMemoryEntitiesCollection(entities.ToArray());
         }
     }
