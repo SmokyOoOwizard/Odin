@@ -56,14 +56,13 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
                               {
                                   var fullName = c.symbol.ToDisplayString().Replace('.', '_');
 
-                                  var hasPart = "coldStorage(entityId, {0})";
-                                  var notHasPart = "!coldStorage(entityId, {0})";
+                                  var hasPart = "entity.Components.Has(entity, {0})";
+                                  var notHasPart = "!entity.Components.Has(entity, {0})";
 
-                                  var addedPart =
-                                      "changes.Any(c => c.TypeId == {0} && c.Component is not null)";
-                                  var removedPart =
-                                      "changes.Any(c => c.TypeId == {0} && c.Component is null)";
-                                  var anyChangesPart = "changes.Any(c => c.TypeId == {0})";
+                                  var addedPart = $"({notHasPart} && entity.Changes.Has(entity, {{0}}))";
+                                  var removedPart = $"({hasPart} && entity.Changes.WasRemoved(entity, {{0}}))";
+                                  var anyChangesPart =
+                                      "(entity.Changes.Has(entity, {0}) || entity.Changes.WasRemoved(entity, {0}))";
 
                                   string AllPart(string[] arg) => $"({string.Join(" && ", arg)})";
                                   string AnyPart(string[] arg) => $"({string.Join(" || ", arg)})";
@@ -112,7 +111,7 @@ public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator
                                   var condition = FilterToString(c.filter);
 
                                   return $@"
-    private static bool Filter_{fullName}(ulong entityId, HasComponentDelegate coldStorage, {nameof(ComponentWrapper)}[] changes)
+    private static bool Filter_{fullName}(Entity entity)
     {{
         if ({condition})
             return true;

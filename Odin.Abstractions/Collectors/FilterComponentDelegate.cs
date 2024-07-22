@@ -2,4 +2,4 @@
 
 namespace Odin.Abstractions.Collectors;
 
-public delegate bool FilterComponentDelegate(ulong entityId, HasComponentDelegate hasFunc, ComponentWrapper[] changes);
+public delegate bool FilterComponentDelegate(Entity entity);

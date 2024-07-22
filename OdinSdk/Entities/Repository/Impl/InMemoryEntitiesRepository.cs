@@ -130,6 +130,19 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                     continue;
                 }
 
+                var ownEntity = new Entity(entity.Id, this, entity.Changes);
+                foreach (var matcher in matchers)
+                {
+                    if (matcher.filter(ownEntity))
+                    {
+                        var collectors = _collectors[matcher.id];
+
+                        foreach (var (_, collector) in collectors)
+                        {
+                            collector.Add(id);
+                        }
+                    }
+                }
 
                 if (!Components.TryGetValue(id, out var components))
                     Components[id] = components = new();
@@ -144,27 +157,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                     components[component.TypeId] = component.Component;
                 }
 
-                foreach (var matcher in matchers)
-                {
-                    if (matcher.filter(id, HasComponent, changes))
-                    {
-                        var collectors = _collectors[matcher.id];
-
-                        foreach (var (_, collector) in collectors)
-                        {
-                            collector.Add(id);
-                        }
-                    }
-                }
             }
         }
-    }
-
-    private bool HasComponent(ulong entityId, ulong componentId)
-    {
-        if (!Components.TryGetValue(entityId, out var components))
-            return false;
-
-        return components.ContainsKey(componentId);
     }
 }

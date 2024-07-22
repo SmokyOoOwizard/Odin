@@ -66,6 +66,32 @@ public abstract class AInMemoryEntitiesRepository : IEntityComponentsRepository
 
     public abstract void Apply(IEntitiesCollection entities);
 
+    public bool Has(Entity entity, ulong componentId)
+    {
+        var id = entity.Id.Id;
+
+        lock (Components)
+        {
+            if (!Components.TryGetValue(id, out var components))
+                return false;
+
+            return components.TryGetValue(componentId, out var component) && component != default;
+        }
+    }
+
+    public bool WasRemoved(Entity entity, ulong componentId)
+    {
+        var id = entity.Id.Id;
+
+        lock (Components)
+        {
+            if (!Components.TryGetValue(id, out var components))
+                return false;
+
+            return components.TryGetValue(componentId, out var component) && component == default;
+        }
+    }
+
     public virtual bool Get<T>(Entity entity, out T? component) where T : IComponent
     {
         component = default;
