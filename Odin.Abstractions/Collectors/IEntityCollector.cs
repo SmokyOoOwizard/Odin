@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Collectors;
+﻿using Odin.Abstractions.Entities;
+
+namespace Odin.Abstractions.Collectors;
 
 public interface IEntityCollector
 {
@@ -6,5 +8,5 @@ public interface IEntityCollector
     
     ulong MatcherId { get; }
 
-    ICollectedEntitiesBatch GetBatch();
+    IEntitiesCollection GetEntities();
 }

@@ -33,7 +33,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         if (collectors.ContainsKey(name))
             throw new InvalidOperationException("Collector already exists.");
 
-        var collector = new EntityCollector(name, matcherId);
+        var collector = new EntityCollector(name, matcherId, this);
 
         collectors[name] = collector;
 
@@ -60,6 +60,23 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
         _collectorsToMatchers.Remove(name);
     }
 
+    public IEntitiesCollection GetEntities(ulong[] ids)
+    {
+        lock (Components)
+        {
+            var entities = new List<Entity>(ids.Length);
+
+            foreach (var id in ids)
+            {
+                if (!Components.ContainsKey(id))
+                    continue;
+                
+                entities.Add(new Entity(new EntityId(id, ContextId), this, this));
+            }
+            
+            return new InMemoryEntitiesCollection(entities.ToArray());
+        }
+    }
 
     public Entity CreateEntity()
     {

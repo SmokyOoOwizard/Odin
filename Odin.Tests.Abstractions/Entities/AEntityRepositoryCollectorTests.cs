@@ -125,8 +125,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -152,8 +151,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(0, entities.Length);
@@ -173,8 +171,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -196,8 +193,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         entity2.Replace(new Component());
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -216,8 +212,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -237,8 +232,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -257,8 +251,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(2, entities.Length);
@@ -279,8 +272,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -306,8 +298,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -333,8 +324,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);
@@ -360,8 +350,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(2, entities.Length);
@@ -388,8 +377,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
 
         Assert.Equal(2, entities.Length);
@@ -410,12 +398,10 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
 
         EntityContexts.Save();
 
-        var entities = collector.GetBatch()
-                                .GetEntities()
+        var entities = collector.GetEntities()
                                 .ToArray();
         
-        var entities2 = collector2.GetBatch()
-                                .GetEntities()
+        var entities2 = collector2.GetEntities()
                                 .ToArray();
 
         Assert.Equal(1, entities.Length);

@@ -1,18 +1,27 @@
 ﻿using Odin.Abstractions.Collectors;
+using Odin.Abstractions.Entities;
+using OdinSdk.Entities.Repository.Impl;
 
 namespace OdinSdk.Entities;
 
 internal class EntityCollector : IEntityCollector
 {
-    public string Name { get; init; }
-    public ulong MatcherId { get; init; }
+    private readonly InMemoryEntitiesRepository _inMemoryEntitiesRepository;
 
     private readonly HashSet<ulong> _all = new();
-
     private readonly Queue<ulong> _entityQueue = new();
 
-    public EntityCollector(string name, ulong matcherId)
+    public string Name { get; }
+    public ulong MatcherId { get; }
+
+
+    public EntityCollector(
+        string name,
+        ulong matcherId,
+        InMemoryEntitiesRepository inMemoryEntitiesRepository
+    )
     {
+        _inMemoryEntitiesRepository = inMemoryEntitiesRepository;
         Name = name;
         MatcherId = matcherId;
     }
@@ -25,15 +34,15 @@ internal class EntityCollector : IEntityCollector
         _entityQueue.Enqueue(entityId);
     }
 
-    public ICollectedEntitiesBatch GetBatch()
+    public IEntitiesCollection GetEntities()
     {
-        var p = new CollectedEntitiesBatch(_entityQueue.ToArray());
+        var ids = _entityQueue.ToArray();
         _entityQueue.Clear();
         _all.Clear();
 
-        return p;
+        return _inMemoryEntitiesRepository.GetEntities(ids);
     }
-    
+
     public void Clear()
     {
         _entityQueue.Clear();
