@@ -1,5 +1,6 @@
 ﻿using Odin.Abstractions.Collectors;
 using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Collectors.Matcher.Extensions;
 using Odin.Abstractions.Components;
 
 namespace OdinSdk.Tests;
@@ -11,7 +12,7 @@ public class MatchersRepositoryTests
         public ulong TestData;
     }
     
-    public class TestMatcher : AComponentMatcher
+    public class TestMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {

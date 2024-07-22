@@ -5,7 +5,7 @@ namespace Odin.Abstractions.Entities;
 
 public interface IEntityRepository : IEntityComponentsRepository
 {
-    IEntityCollector CreateOrGetCollector<T>(string name) where T : AComponentMatcher;
+    IEntityCollector CreateOrGetCollector<T>(string name) where T : AReactiveComponentMatcher;
     void DeleteCollector(string name);
 
     Entity CreateEntity();

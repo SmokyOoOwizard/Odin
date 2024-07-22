@@ -7,7 +7,7 @@ namespace Odin.Component.CodeGen.Diagnostics;
 
 public abstract class AComponentMatcherConfigureDiagnosticAnalyzer : DiagnosticAnalyzer
 {
-    private static readonly string ComponentMatcherBaseName = typeof(AComponentMatcher).FullName!;
+    private static readonly string ComponentMatcherBaseName = typeof(AReactiveComponentMatcher).FullName!;
 
     private SyntaxKind[] SupportedSyntaxKinds => new[] { SyntaxKind.MethodDeclaration };
 
@@ -26,7 +26,7 @@ public abstract class AComponentMatcherConfigureDiagnosticAnalyzer : DiagnosticA
             return;
 
         var name = memberSymbol.Name;
-        if (name != nameof(AComponentMatcher.Configure) && memberSymbol.IsOverride)
+        if (name != nameof(AReactiveComponentMatcher.Configure) && memberSymbol.IsOverride)
             return;
 
         var containingType = memberSymbol.ContainingType;

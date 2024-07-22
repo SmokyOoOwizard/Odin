@@ -1,4 +1,5 @@
 ﻿using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Collectors.Matcher.Extensions;
 using Odin.Abstractions.Components;
 using Odin.Abstractions.Contexts;
 using OdinSdk.Components;
@@ -28,7 +29,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         public ulong TestData;
     }
 
-    public class HasMatcher : AComponentMatcher
+    public class HasMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -36,7 +37,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class NotHasMatcher : AComponentMatcher
+    public class NotHasMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -44,7 +45,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class AllHasMatcher : AComponentMatcher
+    public class AllHasMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -52,7 +53,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class AnyHasMatcher : AComponentMatcher
+    public class AnyHasMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -61,7 +62,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class NotMatcher : AComponentMatcher
+    public class NotMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -70,7 +71,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class AddedMatcher : AComponentMatcher
+    public class AddedMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -78,7 +79,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class RemovedMatcher : AComponentMatcher
+    public class RemovedMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -86,7 +87,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class AnyChangesMatcher : AComponentMatcher
+    public class AnyChangesMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -94,7 +95,7 @@ public abstract class AEntityRepositoryCollectorTests : ATestsWithContext
         }
     }
 
-    public class ComplexMatcher : AComponentMatcher
+    public class ComplexMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {

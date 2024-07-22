@@ -23,7 +23,7 @@ public static class MatchersRepository
     }
 
 
-    public static ulong GetMatcherId<T>() where T : AComponentMatcher
+    public static ulong GetMatcherId<T>() where T : AComponentMatcherBase
     {
         foreach (var matcher in Matchers)
         {

@@ -9,7 +9,7 @@ namespace OdinSdk.Contexts;
 public static class EntityContextExtensions
 {
     public static IEntityCollector CreateCollector<T>(this AEntityContext context, string name)
-        where T : AComponentMatcher
+        where T : AReactiveComponentMatcher
     {
         var rep = EntityContextsRepository.GetRepository(context.Id);
 

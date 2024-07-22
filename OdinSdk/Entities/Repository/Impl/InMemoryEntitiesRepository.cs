@@ -22,7 +22,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     {
     }
 
-    public IEntityCollector CreateOrGetCollector<T>(string name) where T : AComponentMatcher
+    public IEntityCollector CreateOrGetCollector<T>(string name) where T : AReactiveComponentMatcher
     {
         if (_collectorsToMatchers.TryGetValue(name, out var matcherId)
          && _collectors.TryGetValue(matcherId, out var collectors)

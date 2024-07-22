@@ -11,7 +11,7 @@ namespace Odin.Component.CodeGen.Diagnostics.Impl.Matchers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentMatcherCallsDiagnosticAnalyzer : AComponentMatcherConfigureDiagnosticAnalyzer
 {
-    private static readonly string AllowMethodNamespace = typeof(AComponentMatcher).Namespace!;
+    private static readonly string AllowMethodNamespace = typeof(AReactiveComponentMatcher).Namespace!;
 
     private const string DIAGNOSTIC_ID = "MatcherRules_0001";
     private const string CATEGORY = "Matcher";

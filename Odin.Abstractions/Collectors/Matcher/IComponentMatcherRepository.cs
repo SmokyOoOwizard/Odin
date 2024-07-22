@@ -3,9 +3,9 @@
 public interface IComponentMatcherRepository
 {
     bool HasMatcher(ulong id);
-    bool HasMatcher<T>() where T : AComponentMatcher;
+    bool HasMatcher<T>() where T : AComponentMatcherBase;
     string GetMatcherJson(ulong matcherId);
     
-    ulong GetMatcherId<T>() where T : AComponentMatcher;
+    ulong GetMatcherId<T>() where T : AComponentMatcherBase;
     FilterComponentDelegate GetFilter(ulong matcherId);
 }

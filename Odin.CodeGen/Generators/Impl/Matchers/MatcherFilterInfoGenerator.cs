@@ -95,7 +95,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
         }}
     }}
 
-    public bool HasMatcher<T>() where T : {nameof(AComponentMatcher)}
+    public bool HasMatcher<T>() where T : {nameof(AComponentMatcherBase)}
     {{
         var fullName = typeof(T).GetFullName();
         switch (fullName)
@@ -107,7 +107,7 @@ public partial class MatcherFilterRepository : IComponentMatcherRepository
         }}
     }}
 
-    public ulong GetMatcherId<T>() where T : {nameof(AComponentMatcher)}
+    public ulong GetMatcherId<T>() where T : {nameof(AComponentMatcherBase)}
     {{
         var fullName = typeof(T).GetFullName();
         switch (fullName)

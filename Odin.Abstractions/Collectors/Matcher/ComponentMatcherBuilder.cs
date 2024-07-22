@@ -1,5 +1,6 @@
 ﻿namespace Odin.Abstractions.Collectors.Matcher;
 
-public class ComponentMatcherBuilder
+public class ComponentMatcherBuilder : AComponentMatcherBuilderBase
 {
+    
 }

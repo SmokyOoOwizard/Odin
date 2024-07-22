@@ -1,9 +1,10 @@
 ﻿using Odin.Abstractions.Collectors.Matcher;
+using Odin.Abstractions.Collectors.Matcher.Extensions;
 using Odin.Abstractions.Components;
 
 namespace Odin.Component.CodeGen.Sample;
 
-public class ComplexComponentMatcher : AComponentMatcher
+public class ComplexComponentMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -14,7 +15,7 @@ public class ComplexComponentMatcher : AComponentMatcher
     }
 }
 
-public class HasMatcher : AComponentMatcher
+public class HasMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -22,7 +23,7 @@ public class HasMatcher : AComponentMatcher
     }
 }
 
-public class NotHasMatcher : AComponentMatcher
+public class NotHasMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -30,7 +31,7 @@ public class NotHasMatcher : AComponentMatcher
     }
 }
 
-public class AllHasMatcher : AComponentMatcher
+public class AllHasMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -38,7 +39,7 @@ public class AllHasMatcher : AComponentMatcher
     }
 }
 
-public class AnyHasMatcher : AComponentMatcher
+public class AnyHasMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -47,7 +48,7 @@ public class AnyHasMatcher : AComponentMatcher
     }
 }
 
-public class NotMatcher : AComponentMatcher
+public class NotMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -56,7 +57,7 @@ public class NotMatcher : AComponentMatcher
     }
 }
 
-public class AddedMatcher : AComponentMatcher
+public class AddedMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -64,7 +65,7 @@ public class AddedMatcher : AComponentMatcher
     }
 }
 
-public class RemovedMatcher : AComponentMatcher
+public class RemovedMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -72,7 +73,7 @@ public class RemovedMatcher : AComponentMatcher
     }
 }
 
-public class AnyChangesMatcher : AComponentMatcher
+public class AnyChangesMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -80,7 +81,7 @@ public class AnyChangesMatcher : AComponentMatcher
     }
 }
 
-public class EmptyComponentMatcher : AComponentMatcher
+public class EmptyComponentMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
@@ -90,7 +91,7 @@ public class EmptyComponentMatcher : AComponentMatcher
 
 public class WrapperComponentMatcher
 {
-    public class Test3ComponentMatcher : AComponentMatcher
+    public class Test3ComponentMatcher : AReactiveComponentMatcher
     {
         public override void Configure()
         {
@@ -99,7 +100,7 @@ public class WrapperComponentMatcher
     }
 }
 
-public class Test4ComponentMatcher : AComponentMatcher
+public class Test4ComponentMatcher : AReactiveComponentMatcher
 {
     public override void Configure()
     {
