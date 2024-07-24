@@ -105,6 +105,35 @@ public abstract class AEntityCollectionFilterTests : ATestsWithContext
 
         Assert.Equal(1, entities.Length);
     }
+    
+    [Fact]
+    public void HasMatcherRemoveComponentTest()
+    {
+        Context.CreateEntity();
+        var entity = Context.CreateEntity();
+        var entity2 = Context.CreateEntity();
+
+        entity.Replace(new Component());
+        entity2.Replace(new Component2());
+
+        EntityContexts.Save();
+
+        var group = Context.GetEntities().Filter<HasMatcher>().Build();
+
+        var entities = group.ToArray();
+
+        Assert.Equal(1, entities.Length);
+        
+        entity.Remove<Component>();
+        
+        EntityContexts.Save();
+        
+        var group2 = Context.GetEntities().Filter<HasMatcher>().Build();
+        
+        var entities2 = group2.ToArray();
+        
+        Assert.Equal(0, entities2.Length);
+    }
 
     [Fact]
     public void NotHasMatcherTest()
