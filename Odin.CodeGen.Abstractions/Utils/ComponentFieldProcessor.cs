@@ -26,7 +26,6 @@ public static class ComponentFieldProcessor
 
                                    if (!fieldType.HasValue)
                                    {
-                                       return null;
                                        if (type is IArrayTypeSymbol arrayType)
                                        {
                                            if (arrayType.Rank > 1)
