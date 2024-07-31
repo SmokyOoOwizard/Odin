@@ -3,6 +3,7 @@ using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.Abstractions.Entities;
+using Odin.Abstractions.Entities.Indexes;
 
 namespace OdinSdk.Entities.Repository.Impl;
 
@@ -16,10 +17,27 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     // key - collector name, value - matcher id
     private readonly Dictionary<string, ulong> _collectorsToMatchers = new();
 
+    // key - component id, value - index
+    private readonly Dictionary<ulong, IInMemoryIndexModule> _indexes = new();
+
     private ulong _lastId;
 
     public InMemoryEntitiesRepository(ulong contextId) : base(contextId)
     {
+        var type = typeof(IInMemoryIndexModule);
+        var existsType = AppDomain.CurrentDomain
+                                  .GetAssemblies()
+                                  .SelectMany(s => s.GetTypes())
+                                  .Where(p => type.IsAssignableFrom(p) && p.IsClass);
+        
+        var indexes = existsType.Select(c=> (IInMemoryIndexModule)Activator.CreateInstance(c)!).ToArray();
+        foreach (var index in indexes)
+        {
+            _indexes[index.GetComponentTypeId()] = index;
+            
+            // todo change changes arg!
+            index.SetRepositories(this, this);
+        }
     }
 
     public IEntityCollector CreateOrGetCollector<T>(string name) where T : AReactiveComponentMatcher
@@ -66,6 +84,11 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
             _collectors.Remove(matcherId);
 
         _collectorsToMatchers.Remove(name);
+    }
+
+    public IIndexModule GetIndex(ulong componentId)
+    {
+        return _indexes[componentId];
     }
 
     public IEntitiesCollection GetEntities(ulong[] ids)
@@ -127,6 +150,12 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                 {
                     Components.Remove(id);
                     OldComponents.Remove(id);
+
+                    foreach (var (_, index) in _indexes)
+                    {
+                        index.Remove(entity.Id);
+                    }
+
                     continue;
                 }
 
@@ -155,8 +184,10 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                     if (components.TryGetValue(component.TypeId, out var oldComponent))
                         oldComponents[component.TypeId] = oldComponent;
                     components[component.TypeId] = component.Component;
-                }
 
+                    if (_indexes.TryGetValue(component.TypeId, out var indexModule))
+                        indexModule.Add(component, entity.Id);
+                }
             }
         }
     }
