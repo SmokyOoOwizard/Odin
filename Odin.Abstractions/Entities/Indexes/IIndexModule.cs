@@ -1,6 +1,4 @@
-﻿using Odin.Abstractions.Components;
-
-namespace Odin.Abstractions.Entities.Indexes;
+﻿namespace Odin.Abstractions.Entities.Indexes;
 
 public interface IIndexModule
 {
@@ -8,8 +6,8 @@ public interface IIndexModule
 
     void Add(ComponentWrapper component, EntityId id);
     void Remove(EntityId id);
+    
+    void SetRepositories(IReadOnlyEntityRepository components, IEntityComponentsRepository changes);
+    ulong GetComponentTypeId();
 }
 
-public interface IIndexModule<T> : IIndexModule where T : struct, IComponent
-{
-}

@@ -49,7 +49,8 @@ public class ContextExtensionIndexGenerator : AComponentIncrementalGenerator
         var componentName = ComponentUtils.GetComponentName(component);
         var indexName = $"{componentName}Index";
         
-        var componentId = TypeComponentUtils.GetComponentTypeId(componentName);
+        var fullName = component.OriginalDefinition.ToDisplayString();
+        var componentId = TypeComponentUtils.GetComponentTypeId(fullName);
 
         var path = namespaceName.Replace('.', '/');
         

@@ -56,7 +56,7 @@ using Odin.Abstractions.Entities;
 
 namespace {namespaceName};
 
-public interface I{indexName} : IIndexModule<{fullName}>
+public interface I{indexName} : IIndexModule
 {{
     {string.Join("\n\t\t\t", indexes)}
 }}
