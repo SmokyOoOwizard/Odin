@@ -53,11 +53,12 @@ public abstract class AEntityIndexTests : ATestsWithContext
         
         EntityContexts.Save();
 
-        var entities = Context.Index<AEntityIndexTests_ComponentIndex>().GetEntities(1,2).ToArray();
+        var entities = Context.Index<AEntityIndexTests_ComponentIndex>().GetEntities(component).ToArray();
+        var entitiesIds = entities.Select(c=>c.Id).ToArray();
         
         Assert.Equal(1, entities.Length);
-        Assert.Contains(entity, entities);
-        Assert.DoesNotContain(entity2, entities);
+        Assert.Contains(entity.Id, entitiesIds);
+        Assert.DoesNotContain(entity2.Id, entitiesIds);
         
         Assert.Equal(component, entities[0].Get<Component>());
     }
@@ -75,11 +76,12 @@ public abstract class AEntityIndexTests : ATestsWithContext
         
         EntityContexts.Save();
 
-        var entities = Context.Index<AEntityIndexTests_Component4Index>().GetEntities(new []{ 1ul, 2ul}).ToArray();
+        var entities = Context.Index<AEntityIndexTests_Component4Index>().GetEntities(component).ToArray();
+        var entitiesIds = entities.Select(c=>c.Id).ToArray();
         
         Assert.Equal(1, entities.Length);
-        Assert.Contains(entity, entities);
-        Assert.DoesNotContain(entity2, entities);
+        Assert.Contains(entity.Id, entitiesIds);
+        Assert.DoesNotContain(entity2.Id, entitiesIds);
         
         Assert.Equal(component, entities[0].Get<Component4>());
     }
@@ -98,10 +100,11 @@ public abstract class AEntityIndexTests : ATestsWithContext
         EntityContexts.Save();
 
         var entities = Context.Index<AEntityIndexTests_Component3Index>().TestData(1, 2).ToArray();
+        var entitiesIds = entities.Select(c=>c.Id).ToArray();
         
         Assert.Equal(1, entities.Length);
-        Assert.Contains(entity, entities);
-        Assert.DoesNotContain(entity2, entities);
+        Assert.Contains(entity.Id, entitiesIds);
+        Assert.DoesNotContain(entity2.Id, entitiesIds);
         
         Assert.Equal(component, entities[0].Get<Component3>());
         
