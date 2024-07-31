@@ -39,7 +39,8 @@ internal class EntityCollector : IEntityCollector
         var ids = _entityQueue.ToArray();
         _entityQueue.Clear();
         _all.Clear();
-
+        
+        // TODO use other changes repository
         return _inMemoryEntitiesRepository.GetEntities(ids);
     }
 
