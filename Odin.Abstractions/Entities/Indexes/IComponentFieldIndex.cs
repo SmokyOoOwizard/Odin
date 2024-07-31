@@ -1,5 +1,5 @@
 ﻿namespace Odin.Abstractions.Entities.Indexes;
 
-public abstract class AComponentFieldIndex : AIndex
+public interface IComponentFieldIndex : IIndex
 {
 }

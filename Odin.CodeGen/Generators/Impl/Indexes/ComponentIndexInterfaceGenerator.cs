@@ -9,7 +9,7 @@ using Odin.CodeGen.Abstractions.Utils;
 namespace Odin.Component.CodeGen.Generators.Impl.Indexes;
 
 [Generator]
-public class ComponentIndexGenerator : AComponentIndexGenerator
+public class ComponentIndexInterfaceGenerator : AComponentIndexGenerator
 {
     protected override void GenerateIndexDefinitions(
         GeneratorExecutionContext context,
@@ -18,9 +18,10 @@ public class ComponentIndexGenerator : AComponentIndexGenerator
     )
     {
         var namespaceName = component.ContainingNamespace.ToDisplayString();
+        var fullName = component.ToDisplayString();
         var componentName = ComponentUtils.GetComponentName(component);
         var indexName = $"{componentName}Index";
-        
+
 
         var path = namespaceName.Replace('.', '/');
         var fullPath = $"{path}/{indexName}";
@@ -43,25 +44,9 @@ using Odin.Abstractions.Entities;
 
 namespace {namespaceName};
 
-public abstract class A{indexName} : IComponentIndex
+public interface I{indexName} : IIndexModule<{fullName}>
 {{
-}}
-
-public sealed class {indexName} : A{indexName}
-{{
-    internal {indexName}(IIndexModule index)
-    {{
-    }}
-
-    public IEntitiesCollection GetEntities()
-    {{
-        throw new System.NotImplementedException();
-    }}
-
-    public IEntitiesCollection GetEntities({string.Join(", ", @params)})
-    {{
-        throw new System.NotImplementedException();
-    }}
+    IEntitiesCollection GetEntities({string.Join(", ", @params)});
 }}
 ";
 

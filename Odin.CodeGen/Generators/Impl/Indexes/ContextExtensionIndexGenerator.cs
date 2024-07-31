@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using Odin.Abstractions.Components;
 using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
+using Odin.CodeGen.Abstractions.Utils;
 
 namespace Odin.Component.CodeGen.Generators.Impl.Indexes;
 
@@ -39,27 +40,13 @@ public class ContextExtensionIndexGenerator : AComponentIncrementalGenerator
         }
     }
 
-    private string GetComponentName(INamedTypeSymbol symbol)
-    {
-        var name = symbol.Name;
-
-        var parent = symbol.ContainingSymbol;
-        while (parent != null && parent is not INamespaceSymbol)
-        {
-            name = $"{parent.Name}_{name}";
-            parent = parent.ContainingSymbol;
-        }
-
-        return name;
-    }
-
     private void GenerateIndexDefinitions(
         GeneratorExecutionContext context,
         INamedTypeSymbol component
     )
     {
         var namespaceName = component.ContainingNamespace.ToDisplayString();
-        var componentName = GetComponentName(component);
+        var componentName = ComponentUtils.GetComponentName(component);
         var indexName = $"{componentName}Index";
         
         var componentId = TypeComponentUtils.GetComponentTypeId(componentName);
@@ -93,7 +80,7 @@ public static class {extensionName}
             throw new System.InvalidOperationException();
 
 
-        var index = rep.GetIndex({componentId});
+        var index = (I{indexName})rep.GetIndex({componentId});
 
         return new {indexName}(index);
     }}
