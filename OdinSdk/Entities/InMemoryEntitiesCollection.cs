@@ -8,8 +8,8 @@ namespace OdinSdk.Entities;
 public class InMemoryEntitiesCollection : IEntitiesCollection
 {
     private readonly Entity[] _entities;
-
-    public InMemoryEntitiesCollection(Entity[] entities)
+    
+    public InMemoryEntitiesCollection(params Entity[] entities)
     {
         _entities = entities;
     }
