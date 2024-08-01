@@ -6,4 +6,7 @@ public struct IndexTestComponent2 : IComponent
 {
     [IndexBy]
     public ulong[] TestField;
+    
+    [IndexBy]
+    public ulong[] TestField2;
 }

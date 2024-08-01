@@ -26,7 +26,7 @@ public static class TypeSymbolExtensions
         return fieldType;
     }
     
-    public static string GetFieldType(this ComponentFieldDeclaration field)
+    public static string GetFieldType(this ComponentFieldDeclaration field, bool useCollection = true)
     {
         var fieldType = field.Type switch
         {
@@ -45,7 +45,7 @@ public static class TypeSymbolExtensions
             _ => string.Empty
         };
 
-        if (field.CollectionType != ECollectionType.None)
+        if (useCollection && field.CollectionType != ECollectionType.None)
         {
             fieldType = field.CollectionType switch
             {
