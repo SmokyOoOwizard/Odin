@@ -26,9 +26,9 @@ public static class TypeSymbolExtensions
         return fieldType;
     }
     
-    public static string GetFieldType(this EFieldType type)
+    public static string GetFieldType(this ComponentFieldDeclaration field)
     {
-        var fieldType = type switch
+        var fieldType = field.Type switch
         {
             EFieldType.Int8 => "Int8",
             EFieldType.Int16 => "Int16",
@@ -44,6 +44,16 @@ public static class TypeSymbolExtensions
             EFieldType.String => "String",
             _ => string.Empty
         };
+
+        if (field.CollectionType != ECollectionType.None)
+        {
+            fieldType = field.CollectionType switch
+            {
+                ECollectionType.Array => $"{fieldType}[]",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+        
         return fieldType;
     }
     

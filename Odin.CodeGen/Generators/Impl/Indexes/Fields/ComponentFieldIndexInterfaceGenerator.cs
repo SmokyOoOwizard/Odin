@@ -18,28 +18,27 @@ public class ComponentFieldIndexInterfaceGenerator : AComponentFieldIndexGenerat
     )
     {
         var namespaceName = component.ContainingNamespace.ToDisplayString();
-        var fullName = component.ToDisplayString();
         var componentName = ComponentUtils.GetComponentName(component);
         var indexName = $"{componentName}Index";
 
 
         var path = namespaceName.Replace('.', '/');
         var fullPath = $"{path}/{indexName}";
-
+        
         var indexes = componentFieldDeclarations
            .Select(c =>
             {
                 var name = c.Name;
-                var type = c.Type.GetFieldType();
+                var type = c.GetFieldType();
 
                 if (c.CollectionType != ECollectionType.None)
                 {
                     return $@"
-    IEntitiesCollection {name}(params {type}[] values);
+    IEntitiesCollection {name}(params {type} values);
 
-    IEntitiesCollection {name}Contains(params {type}[] values);
+    IEntitiesCollection {name}Contains(params {type} values);
 
-    IEntitiesCollection {name}ContainsAny(params {type}[] values);
+    IEntitiesCollection {name}ContainsAny(params {type} values);
 ";
                 }
 

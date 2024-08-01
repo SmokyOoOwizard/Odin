@@ -141,8 +141,7 @@ public class {componentName}Serializer : IComponentSerializer<{componentFullName
 
     private static string GetFieldDeserialization(ComponentFieldDeclaration declaration, int offset)
     {
-        var castType = TypeSymbolExtensions.GetFieldType(declaration.Type) +
-                       (declaration.CollectionType == ECollectionType.Array ? "[]" : "");
+        var castType = declaration.GetFieldType();
 
         var result = $"component.{declaration.Name} = ({castType})(serializedComponent.Fields[{offset}].Value)!;";
 

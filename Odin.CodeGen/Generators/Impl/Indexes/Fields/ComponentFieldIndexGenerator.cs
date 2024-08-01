@@ -28,24 +28,24 @@ public class ComponentFieldIndexGenerator : AComponentFieldIndexGenerator
            .Select(c =>
             {
                 var name = c.Name;
-                var type = c.Type.GetFieldType();
+                var type = c.GetFieldType();
 
                 if (c.CollectionType != ECollectionType.None)
                 {
                     return $@"
-    public IEntitiesCollection {name}(params {type}[] values)
+    public IEntitiesCollection {name}(params {type} values)
     {{
-        throw new System.NotImplementedException();
+        return _index.{name}(values);
     }}
 
-    public IEntitiesCollection {name}Contains(params {type}[] values)
+    public IEntitiesCollection {name}Contains(params {type} values)
     {{
-        throw new System.NotImplementedException();
+        return _index.{name}Contains(values);
     }}
 
-    public IEntitiesCollection {name}ContainsAny(params {type}[] values)
+    public IEntitiesCollection {name}ContainsAny(params {type} values)
     {{
-        throw new System.NotImplementedException();
+        return _index.{name}ContainsAny(values);
     }}
 ";
                 }
@@ -53,7 +53,7 @@ public class ComponentFieldIndexGenerator : AComponentFieldIndexGenerator
                 return $@"
     public IEntitiesCollection {name}({type} value)
     {{
-        throw new System.NotImplementedException();
+        return _index.{name}(value);
     }}
 ";
             });
@@ -73,8 +73,11 @@ public abstract class A{indexName} : IComponentFieldIndex
 
 public sealed class {indexName} : A{indexName}
 {{
-    internal {indexName}(IIndexModule index)
+    private readonly I{indexName} _index;
+
+    internal {indexName}(I{indexName} index)
     {{
+        _index = index;
     }}
 
     public IEntitiesCollection GetEntities()
