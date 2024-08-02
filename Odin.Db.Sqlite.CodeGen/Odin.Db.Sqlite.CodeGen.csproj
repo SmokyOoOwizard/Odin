@@ -27,7 +27,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" PrivateAssets="All"/>
         <ProjectReference Include="..\Odin.CodeGen.Abstractions\Odin.CodeGen.Abstractions.csproj" PrivateAssets="All"/>
 
         <None Include="$(OutputPath)\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />

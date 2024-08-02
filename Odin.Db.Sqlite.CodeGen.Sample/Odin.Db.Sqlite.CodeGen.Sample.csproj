@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" />
         <ProjectReference Include="..\Odin.Db.Sqlite\Odin.Db.Sqlite.csproj" />
         <ProjectReference Include="..\Odin.Db.Sqlite.CodeGen\Odin.Db.Sqlite.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>

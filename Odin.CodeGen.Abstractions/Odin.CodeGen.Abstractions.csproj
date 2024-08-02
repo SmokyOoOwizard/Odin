@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Odin.Abstractions\Odin.Abstractions.csproj" />
+      <ProjectReference Include="..\Odin.Core.Abstractions\Odin.Core.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
