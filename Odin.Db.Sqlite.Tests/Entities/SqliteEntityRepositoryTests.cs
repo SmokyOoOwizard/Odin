@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
-using Odin.Abstractions.Contexts.Utils;
+using Odin.Core.Utils;
 using Odin.Db.Sqlite.Entities;
 using Odin.Tests.Abstractions.Entities;
 

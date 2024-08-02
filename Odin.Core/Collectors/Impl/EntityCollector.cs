@@ -1,8 +1,7 @@
-﻿using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Entities;
-using Odin.Entities.Repository.Impl;
+﻿using Odin.Core.Entities.Collections;
+using Odin.Core.Repositories.Entities.Impl;
 
-namespace Odin.Entities;
+namespace Odin.Core.Collectors.Impl;
 
 internal class EntityCollector : IEntityCollector
 {

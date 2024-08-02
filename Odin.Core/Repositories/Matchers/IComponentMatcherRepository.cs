@@ -1,4 +1,7 @@
-﻿namespace Odin.Abstractions.Collectors.Matcher;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Matchers;
+
+namespace Odin.Core.Repositories.Matchers;
 
 public interface IComponentMatcherRepository
 {

@@ -3,15 +3,19 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Odin.Abstractions.Collectors.Matcher;
 using Odin.CodeGen.Abstractions.Utils;
+using Odin.Core.Abstractions.Matchers;
 
 namespace Odin.Core.CodeGen.Diagnostics.Impl.Matchers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentMatcherCallsDiagnosticAnalyzer : AComponentMatcherConfigureDiagnosticAnalyzer
 {
-    private static readonly string AllowMethodNamespace = typeof(AReactiveComponentMatcher).Namespace!;
+    private static readonly string[] AllowMethodNamespace = new[]
+    {
+        typeof(AReactiveComponentMatcher).Namespace!,
+        "Odin.Core.Matchers.Extensions"
+    };
 
     private const string DIAGNOSTIC_ID = "MatcherRules_0001";
     private const string CATEGORY = "Matcher";
@@ -45,7 +49,7 @@ public class ComponentMatcherCallsDiagnosticAnalyzer : AComponentMatcherConfigur
         {
             var symbol = (IMethodSymbol)context.SemanticModel.GetSymbolInfo(call).Symbol!;
             var name = (symbol.ReducedFrom ?? symbol).ToDisplayString();
-            if (name.StartsWith(AllowMethodNamespace))
+            if (AllowMethodNamespace.Any(c => name.StartsWith(c)))
                 continue;
 
             var diagnostic = Diagnostic.Create(Rule, call.GetLocation());

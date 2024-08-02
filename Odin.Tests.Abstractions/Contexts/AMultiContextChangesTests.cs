@@ -1,6 +1,5 @@
-﻿using Odin.Abstractions.Contexts;
-using Odin.Components;
-using Odin.Contexts;
+﻿using Odin.Core.Components;
+using Odin.Core.Contexts;
 using Xunit;
 
 namespace Odin.Tests.Abstractions.Contexts;

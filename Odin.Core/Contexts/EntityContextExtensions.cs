@@ -1,10 +1,11 @@
-﻿using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Contexts;
-using Odin.Abstractions.Entities;
-using Odin.Entities.Repository.Impl;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Collectors;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
+using Odin.Core.Repositories.Contexts;
+using Odin.Core.Repositories.Entities.Impl;
 
-namespace Odin.Contexts;
+namespace Odin.Core.Contexts;
 
 public static class EntityContextExtensions
 {

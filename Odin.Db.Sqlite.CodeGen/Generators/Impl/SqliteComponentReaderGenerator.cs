@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Odin.Abstractions.Components.Declaration;
 using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
+using Odin.Core.Abstractions.Components.Declarations;
 
 namespace Odin.Db.Sqlite.CodeGen.Generators.Impl;
 

@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Collectors.Matcher.Extensions;
+﻿using Odin.Core.Abstractions.Matchers.Impl;
+
+namespace Odin.Core.Matchers.Extensions;
 
 public static class ComponentMatcherLogicExtensions
 {

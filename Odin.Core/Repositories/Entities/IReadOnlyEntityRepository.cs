@@ -1,6 +1,9 @@
-﻿using Odin.Abstractions.Components;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Components;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
 
-namespace Odin.Abstractions.Entities;
+namespace Odin.Core.Repositories.Entities;
 
 public interface IReadOnlyEntityRepository
 {

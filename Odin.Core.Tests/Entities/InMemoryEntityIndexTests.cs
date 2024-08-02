@@ -1,7 +1,7 @@
-﻿using Odin.Contexts;
+﻿using Odin.Core.Contexts.Impl;
 using Odin.Tests.Abstractions.Entities;
 
-namespace Odin.Tests.Entities;
+namespace Odin.Core.Tests.Entities;
 
 public class InMemoryEntityIndexTests : AEntityIndexTests
 {

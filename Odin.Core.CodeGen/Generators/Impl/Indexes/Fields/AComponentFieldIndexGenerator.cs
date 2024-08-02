@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
+using Odin.Core.Abstractions.Components.Declarations;
 
 namespace Odin.Core.CodeGen.Generators.Impl.Indexes.Fields;
 

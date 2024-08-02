@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Odin.Abstractions.Components.Declaration;
+using Odin.Core.Abstractions.Components.Declarations;
 
 namespace Odin.CodeGen.Abstractions.Utils;
 

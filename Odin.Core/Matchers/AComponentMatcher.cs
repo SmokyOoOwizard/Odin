@@ -1,4 +1,7 @@
-﻿namespace Odin.Abstractions.Collectors.Matcher;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Abstractions.Matchers.Impl;
+
+namespace Odin.Core.Matchers;
 
 public abstract class AComponentMatcher : AComponentMatcherBase
 {

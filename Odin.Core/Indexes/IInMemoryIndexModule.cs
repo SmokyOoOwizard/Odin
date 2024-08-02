@@ -1,4 +1,4 @@
-﻿namespace Odin.Abstractions.Entities.Indexes;
+﻿namespace Odin.Core.Indexes;
 
 public interface IInMemoryIndexModule : IIndexModule
 {

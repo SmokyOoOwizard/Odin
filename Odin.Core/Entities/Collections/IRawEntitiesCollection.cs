@@ -1,6 +1,6 @@
-﻿using Odin.Abstractions.Collectors.Matcher;
+﻿using Odin.Core.Matchers;
 
-namespace Odin.Abstractions.Entities;
+namespace Odin.Core.Entities.Collections;
 
 public interface IRawEntitiesCollection
 {

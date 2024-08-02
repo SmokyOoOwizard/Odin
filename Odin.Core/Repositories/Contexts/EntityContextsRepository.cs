@@ -1,6 +1,6 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Repositories.Entities;
 
-namespace Odin.Abstractions.Contexts;
+namespace Odin.Core.Repositories.Contexts;
 
 public static class EntityContextsRepository
 {

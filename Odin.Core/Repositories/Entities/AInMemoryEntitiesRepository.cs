@@ -1,8 +1,11 @@
-﻿using Odin.Abstractions.Components;
-using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Components;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
+using Odin.Core.Entities.Collections.Impl;
+using Odin.Utils;
 
-namespace Odin.Entities.Repository;
+namespace Odin.Core.Repositories.Entities;
 
 public abstract class AInMemoryEntitiesRepository : IEntityComponentsRepository
 {

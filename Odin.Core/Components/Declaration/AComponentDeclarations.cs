@@ -1,7 +1,8 @@
-﻿using Odin.Abstractions.Components.Declaration.Builder;
-using Odin.Abstractions.Components.Declaration.Builder.States;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Components.Declaration.Builder;
+using Odin.Core.Components.Declaration.Builder.States;
 
-namespace Odin.Abstractions.Components.Declaration;
+namespace Odin.Core.Components.Declaration;
 
 public abstract class AComponentDeclarations<T> where T : AComponentDeclarations<T>, new()
 {

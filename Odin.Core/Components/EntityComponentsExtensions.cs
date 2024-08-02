@@ -1,7 +1,7 @@
-﻿using Odin.Abstractions.Components;
-using Odin.Abstractions.Entities;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Entities;
 
-namespace Odin.Components;
+namespace Odin.Core.Components;
 
 public static class EntityComponentsExtensions
 {

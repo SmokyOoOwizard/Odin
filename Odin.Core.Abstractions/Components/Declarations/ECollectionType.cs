@@ -1,4 +1,4 @@
-﻿namespace Odin.Abstractions.Components.Declaration
+﻿namespace Odin.Core.Abstractions.Components.Declarations
 {
     public enum ECollectionType : byte
     {

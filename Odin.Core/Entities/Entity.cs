@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Entities;
+﻿using Odin.Core.Repositories.Entities;
+
+namespace Odin.Core.Entities;
 
 public readonly struct Entity
 {

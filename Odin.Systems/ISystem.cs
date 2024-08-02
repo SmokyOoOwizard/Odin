@@ -1,5 +1,3 @@
 ﻿namespace Odin.Systems;
 
-public interface ISystem
-{
-}
+public interface ISystem;

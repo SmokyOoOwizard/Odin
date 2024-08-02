@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Odin.Core.Abstractions\Odin.Core.Abstractions.csproj" />
         <ProjectReference Include="..\Odin.Core.CodeGen\Odin.Core.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\Odin.Core\Odin.Core.csproj" />
     </ItemGroup>

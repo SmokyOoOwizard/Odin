@@ -1,8 +1,10 @@
-﻿using Odin.Abstractions.Components;
-using Odin.Abstractions.Entities;
-using Odin.Contexts;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Components;
+using Odin.Core.Contexts;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
 
-namespace Odin.Entities.Repository.Impl;
+namespace Odin.Core.Repositories.Entities.Impl;
 
 internal class ReferenceInMemoryChangedComponentsRepository : IEntityComponentsRepository
 {

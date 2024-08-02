@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
+using Odin.Core.Abstractions.Matchers;
+using Odin.Utils;
 
 namespace Odin.Core.CodeGen.Generators.Impl.Matchers;
 
@@ -77,9 +77,10 @@ public class MatcherFilterInfoGenerator : AComponentMatcherIncrementalGenerator
 
 using System;
 using System.Linq;
-using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
-using Odin.Abstractions.Collectors.Matcher;
+using Odin.Core.Entities;
+using Odin.Utils;
+using Odin.Core.Repositories.Matchers;
+using Odin.Core.Abstractions.Matchers;
 
 namespace {namespaceName};
 public partial class MatcherFilterRepository : IComponentMatcherRepository

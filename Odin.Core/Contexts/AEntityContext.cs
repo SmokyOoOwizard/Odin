@@ -1,4 +1,4 @@
-﻿namespace Odin.Abstractions.Contexts;
+﻿namespace Odin.Core.Contexts;
 
 public abstract class AEntityContext : IDisposable
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Odin.Abstractions.Components;
+using Odin.Core.Abstractions.Components;
 
 namespace Odin.CodeGen.Abstractions;
 

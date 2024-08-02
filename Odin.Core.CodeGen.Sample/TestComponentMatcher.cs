@@ -1,8 +1,8 @@
-﻿using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Collectors.Matcher.Extensions;
-using Odin.Abstractions.Components;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Components;
+using Odin.Core.Matchers.Extensions;
 
-namespace Odin.Component.CodeGen.Sample;
+namespace Odin.Core.CodeGen.Sample;
 
 public class ComplexComponentMatcher : AReactiveComponentMatcher
 {

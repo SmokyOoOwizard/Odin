@@ -1,9 +1,9 @@
-﻿using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Collectors.Matcher.Extensions;
-using Odin.Abstractions.Components;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Matchers.Extensions;
+using Odin.Core.Repositories.Matchers.Impl;
 
-namespace Odin.Tests;
+namespace Odin.Core.Tests;
 
 public class MatchersRepositoryTests
 {

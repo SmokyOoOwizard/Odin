@@ -1,4 +1,9 @@
-﻿namespace Odin.Abstractions.Entities.Indexes;
+﻿using Odin.Core.Components;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
+using Odin.Core.Repositories.Entities;
+
+namespace Odin.Core.Indexes;
 
 public interface IIndexModule
 {

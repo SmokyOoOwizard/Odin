@@ -1,7 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Odin.Core.Abstractions.Components;
 
-namespace Odin.Abstractions.Components.Utils;
+namespace Odin.Utils;
 
 public static class TypeComponentUtils
 {

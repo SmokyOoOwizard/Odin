@@ -1,4 +1,4 @@
-﻿namespace Odin.Abstractions.Entities;
+﻿namespace Odin.Core.Entities;
 
 public readonly record struct EntityId(ulong Id, ulong ContextId)
 {

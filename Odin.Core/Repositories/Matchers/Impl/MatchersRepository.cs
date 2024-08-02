@@ -1,6 +1,7 @@
-﻿using Odin.Abstractions.Collectors.Matcher;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Matchers;
 
-namespace Odin.Abstractions.Collectors;
+namespace Odin.Core.Repositories.Matchers.Impl;
 
 public static class MatchersRepository
 {

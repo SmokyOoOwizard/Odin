@@ -1,6 +1,6 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Entities.Collections;
 
-namespace Odin.Entities.Repository.Impl;
+namespace Odin.Core.Repositories.Entities.Impl;
 
 public class InMemoryEntitiesChangedComponentsRepository : AInMemoryEntitiesRepository, IEntityComponentsRepository
 {

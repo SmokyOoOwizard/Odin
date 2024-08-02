@@ -1,6 +1,6 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Entities.Collections;
 
-namespace Odin.Abstractions.Collectors;
+namespace Odin.Core.Collectors;
 
 public interface IEntityCollector
 {

@@ -1,8 +1,8 @@
-﻿using Odin.Abstractions.Contexts;
-using Odin.Abstractions.Contexts.Utils;
-using Odin.Entities.Repository.Impl;
+﻿using Odin.Core.Repositories.Contexts;
+using Odin.Core.Repositories.Entities.Impl;
+using Odin.Core.Utils;
 
-namespace Odin.Contexts;
+namespace Odin.Core.Contexts.Impl;
 
 public class InMemoryEntityContext : AEntityContext
 {

@@ -1,5 +1,5 @@
-﻿using Odin.Abstractions.Components;
+﻿using Odin.Core.Abstractions.Components;
 
-namespace Odin.Abstractions.Entities;
+namespace Odin.Core.Components;
 
 public record struct ComponentWrapper(ulong TypeId, IComponent? Component);

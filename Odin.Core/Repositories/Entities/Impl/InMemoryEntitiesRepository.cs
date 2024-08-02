@@ -1,11 +1,15 @@
-﻿using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Components;
-using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
-using Odin.Abstractions.Entities.Indexes;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Collectors;
+using Odin.Core.Collectors.Impl;
+using Odin.Core.Components;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
+using Odin.Core.Entities.Collections.Impl;
+using Odin.Core.Indexes;
+using Odin.Core.Repositories.Matchers.Impl;
+using Odin.Utils;
 
-namespace Odin.Entities.Repository.Impl;
+namespace Odin.Core.Repositories.Entities.Impl;
 
 public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRepository
 {

@@ -1,6 +1,6 @@
 ﻿using Odin.Utils;
 
-namespace Odin.Tests.Utils;
+namespace Odin.Core.Tests.Utils;
 
 public class NumberConvertorTests
 {

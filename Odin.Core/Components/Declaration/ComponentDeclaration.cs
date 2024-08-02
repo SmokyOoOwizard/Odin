@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Components.Declaration;
+﻿using Odin.Core.Abstractions.Components.Declarations;
+
+namespace Odin.Core.Components.Declaration;
 
 public struct ComponentDeclaration
 {

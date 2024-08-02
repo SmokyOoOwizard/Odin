@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Collectors.Matcher
+﻿using Odin.Core.Abstractions.Matchers.Impl;
+
+namespace Odin.Core.Abstractions.Matchers
 {
     public abstract class AReactiveComponentMatcher : AComponentMatcherBase
     {

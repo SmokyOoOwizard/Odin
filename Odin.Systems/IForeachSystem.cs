@@ -1,4 +1,4 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Entities;
 
 namespace Odin.Systems;
 

@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Odin.Abstractions.Components;
+using Odin.Core.Abstractions.Components;
 
 namespace Odin.Core.CodeGen.Diagnostics;
 

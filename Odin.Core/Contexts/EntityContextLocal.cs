@@ -1,6 +1,6 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Repositories.Entities;
 
-namespace Odin.Contexts;
+namespace Odin.Core.Contexts;
 
 public struct EntityContextLocal
 {

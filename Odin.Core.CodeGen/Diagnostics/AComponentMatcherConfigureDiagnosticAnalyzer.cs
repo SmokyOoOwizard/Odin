@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Odin.Abstractions.Collectors.Matcher;
+using Odin.Core.Abstractions.Matchers;
 
 namespace Odin.Core.CodeGen.Diagnostics;
 

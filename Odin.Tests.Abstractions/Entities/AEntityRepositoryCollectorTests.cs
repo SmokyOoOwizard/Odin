@@ -1,9 +1,8 @@
-﻿using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Collectors.Matcher.Extensions;
-using Odin.Abstractions.Components;
-using Odin.Abstractions.Contexts;
-using Odin.Components;
-using Odin.Contexts;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Components;
+using Odin.Core.Contexts;
+using Odin.Core.Matchers.Extensions;
 using Xunit;
 
 namespace Odin.Tests.Abstractions.Entities;

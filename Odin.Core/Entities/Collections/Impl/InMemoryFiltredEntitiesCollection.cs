@@ -1,9 +1,8 @@
 ﻿using System.Collections;
-using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Entities;
+using Odin.Core.Matchers;
+using Odin.Core.Repositories.Matchers.Impl;
 
-namespace Odin.Entities;
+namespace Odin.Core.Entities.Collections.Impl;
 
 public class InMemoryFiltredEntitiesCollection : IEntitiesCollection
 {

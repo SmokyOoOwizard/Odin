@@ -2,8 +2,8 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions.Utils;
+using Odin.Core.Abstractions.Components.Declarations;
 
 namespace Odin.Core.CodeGen.Utils;
 

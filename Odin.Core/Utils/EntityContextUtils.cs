@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Odin.Abstractions.Contexts.Utils;
+namespace Odin.Core.Utils;
 
 public static class EntityContextUtils
 {

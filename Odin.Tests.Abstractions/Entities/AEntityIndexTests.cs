@@ -1,7 +1,7 @@
-﻿using Odin.Abstractions.Components;
-using Odin.Abstractions.Contexts;
-using Odin.Components;
-using Odin.Contexts;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Abstractions.Components.Attributes;
+using Odin.Core.Components;
+using Odin.Core.Contexts;
 using Xunit;
 
 namespace Odin.Tests.Abstractions.Entities;

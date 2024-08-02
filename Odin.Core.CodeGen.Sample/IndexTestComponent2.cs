@@ -1,6 +1,7 @@
-﻿using Odin.Abstractions.Components;
+﻿using Odin.Core.Abstractions.Components;
+using Odin.Core.Abstractions.Components.Attributes;
 
-namespace Odin.Component.CodeGen.Sample;
+namespace Odin.Core.CodeGen.Sample;
 
 public struct IndexTestComponent2 : IComponent
 {

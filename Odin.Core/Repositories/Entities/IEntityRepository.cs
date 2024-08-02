@@ -1,8 +1,9 @@
-﻿using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Collectors.Matcher;
-using Odin.Abstractions.Entities.Indexes;
+﻿using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Collectors;
+using Odin.Core.Entities;
+using Odin.Core.Indexes;
 
-namespace Odin.Abstractions.Entities;
+namespace Odin.Core.Repositories.Entities;
 
 public interface IEntityRepository : IEntityComponentsRepository
 {

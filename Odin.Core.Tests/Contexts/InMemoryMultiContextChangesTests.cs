@@ -1,7 +1,7 @@
-﻿using Odin.Contexts;
+﻿using Odin.Core.Contexts.Impl;
 using Odin.Tests.Abstractions.Contexts;
 
-namespace Odin.Tests.Contexts;
+namespace Odin.Core.Tests.Contexts;
 
 public class InMemoryMultiContextChangesTests : AMultiContextChangesTests
 {

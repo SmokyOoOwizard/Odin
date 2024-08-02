@@ -1,5 +1,7 @@
 ﻿using System;
 using Odin.Abstractions.Components;
+using Odin.Core.Abstractions.Components;
+using Odin.Core.Abstractions.Components.Attributes;
 
 namespace Odin.Db.Sqlite.CodeGen.Sample;
 

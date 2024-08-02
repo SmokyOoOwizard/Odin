@@ -1,5 +1,5 @@
-﻿using Odin.Abstractions.Entities;
+﻿using Odin.Core.Entities;
 
-namespace Odin.Abstractions.Collectors;
+namespace Odin.Core.Matchers;
 
 public delegate bool FilterComponentDelegate(Entity entity);

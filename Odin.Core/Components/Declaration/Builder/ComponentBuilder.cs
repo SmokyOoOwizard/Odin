@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Components.Declaration.Builder;
+﻿using Odin.Core.Abstractions.Components;
+
+namespace Odin.Core.Components.Declaration.Builder;
 
 public class ComponentBuilder<T, TState> where T : IComponent where TState : struct, IComponentBuilderState
 {

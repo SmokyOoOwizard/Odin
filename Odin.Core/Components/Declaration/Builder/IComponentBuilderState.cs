@@ -1,4 +1,6 @@
-﻿namespace Odin.Abstractions.Components.Declaration.Builder;
+﻿using Odin.Core.Abstractions.Components;
+
+namespace Odin.Core.Components.Declaration.Builder;
 
 public interface IComponentBuilderState
 {
