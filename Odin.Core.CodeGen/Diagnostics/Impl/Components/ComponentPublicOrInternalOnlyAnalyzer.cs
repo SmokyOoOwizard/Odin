@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Odin.Core.CodeGen.Diagnostics.Impl.Components;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class ComponentPublicOnlyAnalyzer : AComponentTypeDiagnosticAnalyzer
+public class ComponentPublicOrInternalOnlyAnalyzer : AComponentTypeDiagnosticAnalyzer
 {
     private const string DIAGNOSTIC_ID = "ComponentRules_0006";
     private const string CATEGORY = "Declaration";
@@ -30,7 +30,7 @@ public class ComponentPublicOnlyAnalyzer : AComponentTypeDiagnosticAnalyzer
         if (typeSymbol == null)
             return;
 
-        if (typeSymbol.DeclaredAccessibility == Accessibility.Public)
+        if (typeSymbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
