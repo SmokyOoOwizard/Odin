@@ -33,7 +33,7 @@ public class InMemoryComponentIndexImplGenerator : AComponentIndexGenerator
 
 using Odin.Abstractions.Entities.Indexes;
 using Odin.Abstractions.Entities;
-using OdinSdk.Entities;
+using Odin.Entities;
 using System.Collections.Generic;
 using System.Linq;
 

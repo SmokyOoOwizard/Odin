@@ -41,7 +41,7 @@ public class InMemoryComponentFieldIndexImplGenerator : AComponentFieldIndexGene
 using Odin.Abstractions.Entities.Indexes;
 using Odin.Abstractions.Entities;
 using Odin.Utils;
-using OdinSdk.Entities;
+using Odin.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System;
