@@ -33,7 +33,7 @@ public static class ComponentFieldProcessor
                                            
                                            collectionType = ECollectionType.Array;
                                            fieldType = arrayType.ElementType.GetFieldType();
-                                       }
+                                       } // todo add logic for immutable collections
                                        else
                                            return null;
                                    }

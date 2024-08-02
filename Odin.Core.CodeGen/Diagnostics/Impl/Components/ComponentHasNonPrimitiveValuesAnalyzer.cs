@@ -49,7 +49,7 @@ public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDi
             }
         }
 
-        if (type.IsAllowedComponentFieldType())
+        if (type.IsAllowedComponentFieldType()) // TODO check recursive inner structures for component constraint rules 
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
