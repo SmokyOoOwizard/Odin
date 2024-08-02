@@ -6,10 +6,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
 using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
 using Odin.CodeGen.Abstractions;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Matchers;
+namespace Odin.Core.CodeGen.Generators.Impl.Matchers;
 
 [Generator]
 public class MatcherFilterGenerator : AComponentMatcherIncrementalGenerator

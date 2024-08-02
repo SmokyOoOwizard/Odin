@@ -8,8 +8,6 @@
 
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-
-        <RootNamespace>Odin.Component.CodeGen</RootNamespace>
         <PackageId>Odin.Core.CodeGen</PackageId>
     </PropertyGroup>
 

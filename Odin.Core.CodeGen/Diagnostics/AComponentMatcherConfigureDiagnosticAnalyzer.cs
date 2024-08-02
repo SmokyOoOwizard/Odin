@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Odin.Abstractions.Collectors.Matcher;
 
-namespace Odin.Component.CodeGen.Diagnostics;
+namespace Odin.Core.CodeGen.Diagnostics;
 
 public abstract class AComponentMatcherConfigureDiagnosticAnalyzer : DiagnosticAnalyzer
 {

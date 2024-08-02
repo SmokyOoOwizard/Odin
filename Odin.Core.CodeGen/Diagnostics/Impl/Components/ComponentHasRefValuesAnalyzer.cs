@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Diagnostics.Impl.Components;
+namespace Odin.Core.CodeGen.Diagnostics.Impl.Components;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticAnalyzer

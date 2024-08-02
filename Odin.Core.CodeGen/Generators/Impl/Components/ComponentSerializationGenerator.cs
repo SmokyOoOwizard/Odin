@@ -8,7 +8,7 @@ using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Components;
+namespace Odin.Core.CodeGen.Generators.Impl.Components;
 
 //[Generator]
 public class ComponentSerializationGenerator : AComponentIncrementalGenerator

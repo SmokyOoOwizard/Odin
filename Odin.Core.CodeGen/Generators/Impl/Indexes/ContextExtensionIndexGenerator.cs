@@ -8,7 +8,7 @@ using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Indexes;
+namespace Odin.Core.CodeGen.Generators.Impl.Indexes;
 
 [Generator]
 public class ContextExtensionIndexGenerator : AComponentIncrementalGenerator

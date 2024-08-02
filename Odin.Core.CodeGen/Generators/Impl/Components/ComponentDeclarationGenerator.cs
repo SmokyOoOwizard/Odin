@@ -4,9 +4,9 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Odin.CodeGen.Abstractions;
-using Odin.Component.CodeGen.Utils;
+using Odin.Core.CodeGen.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Components;
+namespace Odin.Core.CodeGen.Generators.Impl.Components;
 
 [Generator]
 public class ComponentDeclarationGenerator : AComponentIncrementalGenerator

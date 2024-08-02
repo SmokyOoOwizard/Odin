@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Indexes;
+namespace Odin.Core.CodeGen.Generators.Impl.Indexes;
 
 [Generator]
 public class ComponentIndexGenerator : AComponentIndexGenerator

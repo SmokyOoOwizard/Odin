@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Diagnostics.Impl.Matchers;
+namespace Odin.Core.CodeGen.Diagnostics.Impl.Matchers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentMatcherContainsOnlyCallsDiagnosticAnalyzer : AComponentMatcherConfigureDiagnosticAnalyzer

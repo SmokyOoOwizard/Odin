@@ -9,7 +9,7 @@ using Odin.Abstractions.Collectors.Matcher;
 using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Matchers;
+namespace Odin.Core.CodeGen.Generators.Impl.Matchers;
 
 [Generator]
 public class MatcherFilterInfoGenerator : AComponentMatcherIncrementalGenerator

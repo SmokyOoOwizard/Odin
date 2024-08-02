@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Odin.Abstractions.Components;
 
-namespace Odin.Component.CodeGen.Diagnostics;
+namespace Odin.Core.CodeGen.Diagnostics;
 
 public abstract class AComponentPropsAndFieldsDiagnosticAnalyzer : DiagnosticAnalyzer
 {

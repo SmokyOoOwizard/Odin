@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Odin.Abstractions.Components.Declaration;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Utils;
+namespace Odin.Core.CodeGen.Utils;
 
 public static class ComponentFieldCodeGen
 {

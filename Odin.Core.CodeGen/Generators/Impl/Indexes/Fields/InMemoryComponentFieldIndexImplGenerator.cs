@@ -7,7 +7,7 @@ using Odin.Abstractions.Components.Declaration;
 using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions.Utils;
 
-namespace Odin.Component.CodeGen.Generators.Impl.Indexes.Fields;
+namespace Odin.Core.CodeGen.Generators.Impl.Indexes.Fields;
 
 [Generator]
 public class InMemoryComponentFieldIndexImplGenerator : AComponentFieldIndexGenerator

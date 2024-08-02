@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Odin.Component.CodeGen.Diagnostics.Impl.Components;
+namespace Odin.Core.CodeGen.Diagnostics.Impl.Components;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ComponentPublicOnlyAnalyzer : AComponentTypeDiagnosticAnalyzer
