@@ -20,49 +20,37 @@ public abstract class AComponentMatcherIncrementalGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
-        var matchers = TypeUtils.GetAllTypes(context.Compilation)
-                                .Where(c => c.DeclaringSyntaxReferences.Length > 0)
-                                .Where(c =>
-                                 {
-                                     var baseType = c.BaseType;
+        var matchers = context.Compilation.SyntaxTrees
+                              .SelectMany(st => st
+                                               .GetRoot()
+                                               .DescendantNodes()
+                                               .OfType<ClassDeclarationSyntax>())
+                              .Select(c =>
+                               {
+                                   var sm = context.Compilation.GetSemanticModel(c.SyntaxTree);
 
-                                     var hasMatcherType = false;
-                                     while (baseType != null)
-                                     {
-                                         var baseTypeName = baseType.OriginalDefinition.ToDisplayString();
-                                         if (baseTypeName == ComponentMatcherBaseName)
-                                         {
-                                             hasMatcherType = true;
-                                             break;
-                                         }
-
-                                         baseType = baseType.BaseType;
-                                     }
-
-                                     if (!hasMatcherType)
-                                         return false;
-
-                                     return true;
-                                 })
-                                .Where(c => c.DeclaredAccessibility == Accessibility.Public)
-                                .Select(c =>
-                                 {
-                                     var members = c.GetMembers()
-                                                    .First(q => q.Name == nameof(AComponentMatcherBase.Configure) &&
-                                                                q is IMethodSymbol);
+                                   return sm.GetDeclaredSymbol(c)!;
+                               })
+                              .OfType<INamedTypeSymbol>()
+                              .Where(s => TypeUtils.CheckBaseType(s, ComponentMatcherBaseName))
+                              .Where(symbol=>symbol.DeclaredAccessibility == Accessibility.Public)
+                              .Select(s =>
+                               {
+                                   var members = s.GetMembers()
+                                                  .First(ms => ms.Name == nameof(AComponentMatcherBase.Configure) &&
+                                                              ms is IMethodSymbol);
 
 
-                                     var declaring = members.DeclaringSyntaxReferences.First();
+                                   var declaring = members.DeclaringSyntaxReferences.First();
 
-                                     var node = (MethodDeclarationSyntax)declaring.GetSyntax();
+                                   var node = (MethodDeclarationSyntax)declaring.GetSyntax();
 
-                                     var model = context.Compilation.GetSemanticModel(node.SyntaxTree);
+                                   var model = context.Compilation.GetSemanticModel(node.SyntaxTree);
                                      
-                                     var parsedFilter = Parse(node, model);
+                                   var parsedFilter = Parse(node, model);
 
-                                     return (node, parsedFilter);
-                                 });
-
+                                   return (node, parsedFilter);
+                               }).ToArray();
 
         GenerateCode(context, matchers);
     }
