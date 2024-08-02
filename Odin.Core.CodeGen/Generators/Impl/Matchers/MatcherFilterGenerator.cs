@@ -129,7 +129,7 @@ using Odin.Core.Entities;
 using Odin.Core.Matchers;
 
 namespace {namespaceName};
-public partial class MatcherFilterRepository
+partial class MatcherFilterRepository
 {{
     public FilterComponentDelegate GetFilter(ulong matcherId) 
     {{

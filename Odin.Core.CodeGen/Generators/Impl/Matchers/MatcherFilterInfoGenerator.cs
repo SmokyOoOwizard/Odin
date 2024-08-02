@@ -30,7 +30,7 @@ public class MatcherFilterInfoGenerator : AComponentMatcherIncrementalGenerator
 
                                              var semanticModel =
                                                  context.Compilation.GetSemanticModel(c.Item1.SyntaxTree);
-                                             var typeSymbol = semanticModel.GetDeclaredSymbol(parent)!;
+                                             var typeSymbol = ModelExtensions.GetDeclaredSymbol(semanticModel, parent)!;
 
                                              return new
                                              {
@@ -83,7 +83,7 @@ using Odin.Core.Repositories.Matchers;
 using Odin.Core.Abstractions.Matchers;
 
 namespace {namespaceName};
-public partial class MatcherFilterRepository : IComponentMatcherRepository
+partial class MatcherFilterRepository : IComponentMatcherRepository
 {{
     public bool HasMatcher(ulong matcherId)
     {{
