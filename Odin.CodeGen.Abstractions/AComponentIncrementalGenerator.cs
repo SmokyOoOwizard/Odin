@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Odin.Abstractions.Components;
-using Odin.CodeGen.Abstractions.Utils;
 
 namespace Odin.CodeGen.Abstractions;
 
@@ -16,27 +16,21 @@ public abstract class AComponentIncrementalGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
-        var components = TypeUtils.GetAllTypes(context.Compilation)
-                                  .Where(c =>
-                                   {
-                                       var interfaces = c?.Interfaces;
-                                       if (interfaces == null)
-                                           return false;
+        var components = context.Compilation.SyntaxTrees
+                       .SelectMany(st => st
+                                        .GetRoot()
+                                        .DescendantNodes()
+                                        .OfType<StructDeclarationSyntax>())
+                       .Select(s =>
+                        {
+                            var sm = context.Compilation.GetSemanticModel(s.SyntaxTree);
 
-                                       // Go through all attributes of the class.
-                                       foreach (var baseType in interfaces)
-                                       {
-                                           var interfaceName = baseType.OriginalDefinition.ToDisplayString();
-
-                                           if (interfaceName != ComponentInterfaceName)
-                                               continue;
-
-                                           return true;
-                                       }
-
-                                       return false;
-                                   })
-                                  .Where(c => c.DeclaredAccessibility == Accessibility.Public);
+                            return sm.GetDeclaredSymbol(s)!;
+                        })
+                       .OfType<INamedTypeSymbol>()
+                       .Where(s =>
+                                  s.AllInterfaces.Any(i => i.OriginalDefinition.ToDisplayString() ==
+                                                           ComponentInterfaceName));
 
         GenerateCode(context, components);
     }
