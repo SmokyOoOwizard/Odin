@@ -22,6 +22,7 @@ public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticA
                                                             DiagnosticSeverity.Error,
                                                             true);
 
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
     protected override SyntaxKind[] SupportedSyntaxKinds => new[] { SyntaxKind.FieldDeclaration };
@@ -37,7 +38,10 @@ public class ComponentHasRefValuesAnalyzer : AComponentPropsAndFieldsDiagnosticA
         if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum || type.IsValueType)
             return;
 
-        if (typeKind == TypedConstantKind.Array)
+        if (typeKind is TypedConstantKind.Array)
+            return;
+
+        if (type.IsAllowedComponentFieldType())
             return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());

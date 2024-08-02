@@ -5,6 +5,28 @@ namespace Odin.CodeGen.Abstractions.Utils;
 
 public static class TypeSymbolExtensions
 {
+    private static readonly string ReadOnlyNamespace = "System.Collections.Immutable";
+
+
+    public static bool IsAllowedComponentFieldType(this ITypeSymbol type)
+    {
+        var typeKind = type.GetTypedConstantKind();
+        if (typeKind is TypedConstantKind.Type)
+        {
+            var isImmutable = type.OriginalDefinition.ContainingNamespace.ToDisplayString().StartsWith(ReadOnlyNamespace);
+            if (isImmutable)
+                return true;
+
+            if (type.IsValueType)
+                return true;
+        }
+
+        if (typeKind is TypedConstantKind.Primitive or TypedConstantKind.Enum or TypedConstantKind.Array)
+            return true;
+
+        return false;
+    }
+
     public static EFieldType? GetFieldType(this ITypeSymbol type)
     {
         EFieldType? fieldType = type.Name switch
@@ -25,7 +47,7 @@ public static class TypeSymbolExtensions
         };
         return fieldType;
     }
-    
+
     public static string GetFieldType(this ComponentFieldDeclaration field, bool useCollection = true)
     {
         var fieldType = field.Type switch
@@ -53,10 +75,10 @@ public static class TypeSymbolExtensions
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
-        
+
         return fieldType;
     }
-    
+
     public static TypedConstantKind GetTypedConstantKind(this ITypeSymbol type)
     {
         switch (type.SpecialType)
@@ -87,7 +109,7 @@ public static class TypeSymbolExtensions
                         return TypedConstantKind.Error;
                 }
 
-                if (type.IsReferenceType)
+                if (type.IsReferenceType || type.IsValueType)
                 {
                     return TypedConstantKind.Type;
                 }

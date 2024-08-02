@@ -21,7 +21,7 @@ public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDi
                                                             CATEGORY,
                                                             DiagnosticSeverity.Error,
                                                             true);
-
+    
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
     protected override SyntaxKind[] SupportedSyntaxKinds => new[] { SyntaxKind.FieldDeclaration };
@@ -48,6 +48,9 @@ public class ComponentHasNonPrimitiveValuesAnalyzer : AComponentPropsAndFieldsDi
                     return;
             }
         }
+
+        if (type.IsAllowedComponentFieldType())
+            return;
 
         var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
         context.ReportDiagnostic(diagnostic);
