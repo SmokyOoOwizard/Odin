@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
-using Odin.Abstractions.Contexts;
-using Odin.Abstractions.Contexts.Utils;
+using Odin.Core.Contexts;
+using Odin.Core.Repositories.Contexts;
+using Odin.Core.Utils;
 using Odin.Db.Sqlite.Entities;
 using Odin.Db.Sqlite.Utils;
 

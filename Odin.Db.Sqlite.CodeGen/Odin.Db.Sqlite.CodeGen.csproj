@@ -27,9 +27,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Odin.CodeGen.Abstractions\Odin.CodeGen.Abstractions.csproj" PrivateAssets="All"/>
 
         <None Include="$(OutputPath)\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+        <ProjectReference Include="..\Odin.Utils\Odin.Utils.csproj" />
+        <ProjectReference Include="..\Odin.CodeGen.Abstractions\Odin.CodeGen.Abstractions.csproj" PrivateAssets="All"/>
     </ItemGroup>
 
     <PropertyGroup>
@@ -38,7 +40,7 @@
 
     <Target Name="GetDependencyTargetPaths">
         <ItemGroup>
-            <TargetPathWithTargetPlatformMoniker Include="..\Odin.Abstractions\**\*.dll" IncludeRuntimeDependency="false" />
+            <TargetPathWithTargetPlatformMoniker Include="..\Odin.Utils\**\*.dll" IncludeRuntimeDependency="false" />
             <TargetPathWithTargetPlatformMoniker Include="..\Odin.CodeGen.Abstractions\**\*.dll" IncludeRuntimeDependency="false" />
         </ItemGroup>
     </Target>

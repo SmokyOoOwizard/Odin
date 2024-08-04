@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
 using Odin.Core.Abstractions.Components.Declarations;
+using Odin.Utils;
 
 namespace Odin.Db.Sqlite.CodeGen.Generators.Impl;
 
@@ -57,11 +58,13 @@ public class ComponentSqliteTableGenerator : AComponentIncrementalGenerator
                                                      }).ToArray();
 
                 var additionalFields = fields.Any() ? $", {string.Join(", ", fields)}" : string.Empty;
+                
+                var componentId = TypeComponentUtils.GetComponentTypeId(componentName);
 
                 var sql =
                     $"CREATE TABLE IF NOT EXISTS {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER, contextId INTEGER{additionalFields}, CONSTRAINT entity UNIQUE (entityId, contextId));\n\t\t\t"
                   + $"CREATE TABLE IF NOT EXISTS __old_{tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, entityId INTEGER, contextId INTEGER{additionalFields}, CONSTRAINT entity UNIQUE (entityId, contextId));\n\t\t\t"
-                  + $"INSERT OR IGNORE INTO componentTypes (name, type, tableName) VALUES ('{componentName}', {{TypeComponentUtils.GetComponentTypeId<{componentName}>()}}, '{tableName}');";
+                  + $"INSERT OR IGNORE INTO componentTypes (name, type, tableName) VALUES ('{componentName}', {componentId}, '{tableName}');";
 
                 return sql;
             });
@@ -74,7 +77,6 @@ public class ComponentSqliteTableGenerator : AComponentIncrementalGenerator
 using System;
 using Microsoft.Data.Sqlite;
 using Odin.Db.Sqlite;
-using Odin.Abstractions.Components.Utils;
 
 namespace {namespaceName};
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
 using Odin.CodeGen.Abstractions.Utils;
 using Odin.Core.Abstractions.Components.Declarations;
+using Odin.Utils;
 
 namespace Odin.Db.Sqlite.CodeGen.Generators.Impl;
 
@@ -98,9 +98,8 @@ public class SqliteComponentReaderGenerator : AComponentIncrementalGenerator
 using System;
 using Microsoft.Data.Sqlite;
 using Odin.Db.Sqlite;
-using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
 using Odin.Utils;
+using Odin.Core.Components;
 
 namespace {namespaceName};
 

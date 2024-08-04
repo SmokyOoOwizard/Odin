@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
-using Odin.Abstractions.Collectors;
+using Odin.Core.Collectors;
+using Odin.Core.Entities.Collections;
 using Odin.Db.Sqlite.Utils;
 
 namespace Odin.Db.Sqlite.Entities;
@@ -19,10 +20,10 @@ internal class SqliteCollector : IEntityCollector
         _connection = connection;
         _contextId = contextId;
     }
-
-    public ICollectedEntitiesBatch GetBatch()
+    
+    public IEntitiesCollection GetEntities()
     {
         var entities = SqlCollectorsUtils.GetEntitiesFromCollector(_connection, _contextId, Name);
-        return new CollectedEntitiesBatch(entities.ToArray());
+        throw new NotImplementedException();
     }
 }

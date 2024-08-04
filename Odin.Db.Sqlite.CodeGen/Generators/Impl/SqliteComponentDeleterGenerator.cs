@@ -3,8 +3,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Odin.Abstractions.Components.Utils;
 using Odin.CodeGen.Abstractions;
+using Odin.Utils;
 
 namespace Odin.Db.Sqlite.CodeGen.Generators.Impl;
 
@@ -49,8 +49,6 @@ public class SqliteComponentDeleterGenerator : AComponentIncrementalGenerator
 using System;
 using Microsoft.Data.Sqlite;
 using Odin.Db.Sqlite;
-using Odin.Abstractions.Components.Utils;
-using Odin.Abstractions.Entities;
 using Odin.Utils;
 
 namespace {namespaceName};

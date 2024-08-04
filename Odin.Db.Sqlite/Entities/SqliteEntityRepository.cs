@@ -1,10 +1,15 @@
 ﻿using System.Data;
 using Microsoft.Data.Sqlite;
-using Odin.Abstractions.Collectors;
-using Odin.Abstractions.Components;
-using Odin.Abstractions.Entities;
 using Odin.Core.Abstractions.Components;
 using Odin.Core.Abstractions.Matchers;
+using Odin.Core.Collectors;
+using Odin.Core.Components;
+using Odin.Core.Entities;
+using Odin.Core.Entities.Collections;
+using Odin.Core.Indexes;
+using Odin.Core.Repositories.Entities;
+using Odin.Core.Repositories.Matchers.Impl;
+using Odin.Db.Sqlite.Entities.Collections;
 using Odin.Db.Sqlite.Utils;
 using Odin.Utils;
 
@@ -34,12 +39,12 @@ public class SqliteEntityRepository : IEntityRepository
         }
     }
 
-    public bool Get<T>(ulong entityId, out T? component) where T : IComponent
+    public bool Get<T>(Entity entity, out T? component) where T : IComponent
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var serializer = SqlCommands.GetReader();
-        var componentWrapper = serializer.Read(_connection, entityId, _contextId, typeId);
+        var componentWrapper = serializer.Read(_connection, entity.Id.Id, _contextId, typeId);
 
         if (componentWrapper.Component == null)
         {
@@ -51,12 +56,12 @@ public class SqliteEntityRepository : IEntityRepository
         return true;
     }
 
-    public bool GetOld<T>(ulong entityId, out T? component) where T : IComponent
+    public bool GetOld<T>(Entity entity, out T? component) where T : IComponent
     {
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var serializer = SqlCommands.GetReader();
-        var componentWrapper = serializer.Read(_connection, entityId, _contextId, typeId, true);
+        var componentWrapper = serializer.Read(_connection, entity.Id.Id, _contextId, typeId, true);
 
         if (componentWrapper.Component == null)
         {
@@ -68,26 +73,15 @@ public class SqliteEntityRepository : IEntityRepository
         return true;
     }
 
-    public IEnumerable<ulong> GetEntities()
+    public IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default)
     {
-        using var command = _connection.CreateCommand();
-
-        command.CommandText = $"SELECT entityId FROM entities WHERE contextId = {_contextId.MapToLong()};";
-        using var reader = command.ExecuteReader();
-
-        while (reader.Read() && reader.GetValue(0) != DBNull.Value)
-        {
-            yield return reader.GetInt64(0).MapToUlong();
-        }
+        var query = $"SELECT entityId FROM entities WHERE contextId = {_contextId.MapToLong()};";
+        return new SqliteEntitiesCollection(_connection, query);
     }
 
-    public IEnumerable<(ulong, ComponentWrapper[])> GetEntitiesWithComponents()
+    public void Replace<T>(Entity entity, T? component) where T : IComponent
     {
-        throw new NotImplementedException();
-    }
-
-    public void Replace<T>(ulong entityId, T? component) where T : IComponent
-    {
+        var entityId = entity.Id.Id;
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var reader = SqlCommands.GetReader();
@@ -107,8 +101,9 @@ public class SqliteEntityRepository : IEntityRepository
             writer.Write(_connection, entityId, _contextId, old, true);
     }
 
-    public void Remove<T>(ulong entityId) where T : IComponent
+    public void Remove<T>(Entity entity) where T : IComponent
     {
+        var entityId = entity.Id.Id;
         var typeId = TypeComponentUtils.GetComponentTypeId<T>();
 
         var reader = SqlCommands.GetReader();
@@ -130,7 +125,7 @@ public class SqliteEntityRepository : IEntityRepository
         var matcherId = MatchersRepository.GetMatcherId<T>();
 
         if (_collectors.ContainsKey(name))
-            throw new InvalidOperationException("Collector already exists.");
+            return _collectorsCache[name];
 
         _collectors[name] = matcherId;
 
@@ -152,7 +147,24 @@ public class SqliteEntityRepository : IEntityRepository
         SqlCollectorsUtils.DeleteCollector(_connection, _contextId, name);
     }
 
-    public ulong CreateEntity()
+    public IIndexModule GetIndex(ulong componentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DestroyEntity(Entity entity)
+    {
+        var entityId = entity.Id.Id;
+        using var command = _connection.CreateCommand();
+
+        command.CommandText =
+            $"DELETE FROM entities WHERE entityId = {entityId.MapToLong()} AND contextId = {_contextId.MapToLong()};";
+        command.ExecuteNonQuery();
+
+        // todo delete components;
+    }
+
+    public Entity CreateEntity()
     {
         lock (_connection)
         {
@@ -182,22 +194,11 @@ public class SqliteEntityRepository : IEntityRepository
                 command.ExecuteNonQuery();
             }
 
-            return lastId;
+            return new Entity(new(lastId, _contextId), this, this);
         }
     }
 
-    public void DestroyEntity(ulong entityId)
-    {
-        using var command = _connection.CreateCommand();
-
-        command.CommandText =
-            $"DELETE FROM entities WHERE entityId = {entityId.MapToLong()} AND contextId = {_contextId.MapToLong()};";
-        command.ExecuteNonQuery();
-
-        // todo delete components;
-    }
-
-    public void Apply(IEnumerable<(ulong, ComponentWrapper[])> entities)
+    public void Apply(IEntitiesCollection entities)
     {
         var reader = SqlCommands.GetReader();
         var writer = SqlCommands.GetWriter();
@@ -210,11 +211,15 @@ public class SqliteEntityRepository : IEntityRepository
             filter = MatchersRepository.GetFilter(c.Key)
         }).ToArray();
 
-        foreach (var (id, changes) in entities)
+        foreach (var entity in entities)
         {
+            var id = entity.Id.Id;
+
+            var changes = entity.Changes.GetComponents(entity);
+
             if (changes.Any(c => c.TypeId == _destroyedId))
             {
-                DestroyEntity(id);
+                DestroyEntity(entity);
                 continue;
             }
 
@@ -233,9 +238,11 @@ public class SqliteEntityRepository : IEntityRepository
                     writer.Write(_connection, id, _contextId, old, true);
             }
 
+            var ownEntity = new Entity(entity.Id, this, entity.Changes);
+
             foreach (var matcher in matchers)
             {
-                if (matcher.filter(id, HasComponent, changes))
+                if (matcher.filter(ownEntity))
                 {
                     foreach (var collector in matcher.collectors)
                     {
@@ -246,14 +253,6 @@ public class SqliteEntityRepository : IEntityRepository
         }
     }
 
-    private bool HasComponent(ulong entityId, ulong componentId)
-    {
-        var serializer = SqlCommands.GetReader();
-        var componentWrapper = serializer.Read(_connection, entityId, _contextId, componentId);
-
-        return componentWrapper.Component != null;
-    }
-
     public void Clear()
     {
         using var command = _connection.CreateCommand();
@@ -262,5 +261,27 @@ public class SqliteEntityRepository : IEntityRepository
         command.ExecuteNonQuery();
 
         // todo delete components;
+    }
+
+    public bool Has(Entity entity, ulong componentId)
+    {
+        var serializer = SqlCommands.GetReader();
+        var component = serializer.Read(_connection, entity.Id.Id, _contextId, componentId);
+
+        return component.Component != null;
+    }
+
+    public bool WasRemoved(Entity entity, ulong componentId)
+    {
+        var serializer = SqlCommands.GetReader();
+        var component = serializer.Read(_connection, entity.Id.Id, _contextId, componentId);
+        var oldComponent = serializer.Read(_connection, entity.Id.Id, _contextId, componentId, true);
+
+        return component.Component == null && oldComponent.Component != null;
+    }
+
+    public ComponentWrapper[] GetComponents(Entity entity)
+    {
+        throw new NotImplementedException();
     }
 }
