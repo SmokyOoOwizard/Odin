@@ -148,7 +148,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
             {
                 var id = entity.Id.Id;
 
-                var changes = entity.Components.GetComponents(entity);
+                var changes = entity.Changes.GetComponents(entity);
                 // tmp
                 if (changes.Any(c => c.TypeId == _destroyedId))
                 {
