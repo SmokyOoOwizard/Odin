@@ -21,4 +21,13 @@ public static class ComponentDeclarationStateExtensions
         builder.State.Id = id;
         return builder;
     }
+    
+    public static ComponentBuilder<T, ComponentDeclarationState> Size<T>(
+        this ComponentBuilder<T, ComponentDeclarationState> builder,
+        ulong id
+    ) where T : IComponent
+    {
+        builder.State.Size = id;
+        return builder;
+    }
 }

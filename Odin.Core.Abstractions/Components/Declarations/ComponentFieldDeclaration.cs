@@ -6,5 +6,6 @@
         public ECollectionType CollectionType { get; set; }
         public bool IsIndex { get; set; }
         public EFieldType Type { get; set; }
+        public int Offset { get; set; }
     }
 }

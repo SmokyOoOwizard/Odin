@@ -9,6 +9,7 @@ public struct ComponentFieldDeclarationState : IComponentBuilderState
     public ECollectionType CollectionType { get; set; }
     public bool IsIndex { get; set; }
     public EFieldType FieldType { get; set; }
+    public int Offset { get; set; }
 
     public ComponentDeclaration Add<T>(ComponentDeclaration declaration) where T : IComponent
     {
@@ -17,7 +18,8 @@ public struct ComponentFieldDeclarationState : IComponentBuilderState
             Name = Name,
             CollectionType = CollectionType,
             IsIndex = IsIndex,
-            Type = FieldType
+            Type = FieldType,
+            Offset = Offset
         };
 
         declaration.Fields = declaration.Fields.Concat(new[] { field })

@@ -59,4 +59,18 @@ public static class ComponentFieldDeclarationStateExtensions
 
         return newBuilder;
     }
+
+    public static ComponentBuilder<T, ComponentFieldDeclarationState> Offset<T>(
+        this ComponentBuilder<T, ComponentFieldDeclarationState> builder,
+        int offset
+    ) where T : IComponent
+    {
+        builder.CompleteState();
+
+        var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
+
+        newBuilder.State.Offset = offset;
+
+        return newBuilder;
+    }
 }

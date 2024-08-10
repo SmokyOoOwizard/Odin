@@ -4,9 +4,10 @@ using Odin.Core.Components.Declaration.Builder.States;
 
 namespace Odin.Core.Components.Declaration;
 
-public abstract class AComponentDeclarations<T> where T : AComponentDeclarations<T>, new()
+public abstract class AComponentDeclarations : IComponentDeclarations
 {
-    public static T Instance { get; } = new();
+    // key - component id, value - component declaration
+    private readonly Dictionary<ulong, ComponentDeclaration> _componentDeclarations = new();
 
     public AComponentDeclarations()
     {
@@ -23,7 +24,7 @@ public abstract class AComponentDeclarations<T> where T : AComponentDeclarations
 
     public bool TryGet(ulong componentTypeId, out ComponentDeclaration componentDeclaration)
     {
-        throw new System.NotImplementedException();
+        return _componentDeclarations.TryGetValue(componentTypeId, out componentDeclaration);
     }
 
     protected ComponentBuilder<TComponent, ComponentDeclarationState> Component<TComponent>() where TComponent : IComponent
@@ -33,5 +34,6 @@ public abstract class AComponentDeclarations<T> where T : AComponentDeclarations
 
     protected void AddComponentDescription(ComponentDeclaration componentDeclaration)
     {
+        _componentDeclarations[componentDeclaration.Id] = componentDeclaration;
     }
 }

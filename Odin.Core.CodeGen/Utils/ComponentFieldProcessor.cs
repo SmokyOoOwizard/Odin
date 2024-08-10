@@ -10,7 +10,7 @@ namespace Odin.Core.CodeGen.Utils;
 public static class ComponentFieldCodeGen
 {
 
-    public static IEnumerable<string> GetCodeFieldDeclarations(ImmutableArray<ISymbol> componentFields)
+    public static IEnumerable<string> GetCodeFieldDeclarations(ImmutableArray<ISymbol> componentFields, string componentFullName)
     {
         var processedMembers = ComponentFieldProcessor.GetFieldDeclarations(componentFields)
                               .Select(w =>
@@ -23,9 +23,10 @@ public static class ComponentFieldCodeGen
                                        w.CollectionType != ECollectionType.None
                                            ? $".Collection({nameof(ECollectionType)}.{w.CollectionType})"
                                            : "",
+                                       $".Offset((int)Marshal.OffsetOf<{componentFullName}>(\"{w.Name}\"))"
                                    }.Where(str => !string.IsNullOrWhiteSpace(str));
 
-                                   return string.Join("\n\t\t\t\t", fieldDeclaration);
+                                   return string.Join("\n\t\t\t", fieldDeclaration);
                                })
                               .Where(str => !string.IsNullOrWhiteSpace(str))
                               .Select(str => str!);
