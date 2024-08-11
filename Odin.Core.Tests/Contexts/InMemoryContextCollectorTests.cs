@@ -1,7 +1,7 @@
 ﻿using Odin.Core.Contexts.Impl;
 using Odin.Tests.Abstractions.Entities;
 
-namespace Odin.Core.Tests;
+namespace Odin.Core.Tests.Contexts;
 
 public class InMemoryContextCollectorTests : AEntityRepositoryCollectorTests
 {

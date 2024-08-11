@@ -2,7 +2,7 @@
 using Odin.Db.Sqlite.Contexts;
 using Odin.Tests.Abstractions.Entities;
 
-namespace Odin.Db.Sqlite.Tests.Entities;
+namespace Odin.Db.Sqlite.Tests.Contexts;
 
 public class SqliteContextCollectorTests : AEntityRepositoryCollectorTests
 {
