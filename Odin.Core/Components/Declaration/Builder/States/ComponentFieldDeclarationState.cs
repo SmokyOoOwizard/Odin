@@ -15,12 +15,18 @@ public struct ComponentFieldDeclarationState : IComponentBuilderState
     {
         var field = new ComponentFieldDeclaration
         {
-            Name = Name,
+            Name = Name ?? throw new ArgumentNullException(nameof(Name)),
             CollectionType = CollectionType,
             IsIndex = IsIndex,
             Type = FieldType,
             Offset = Offset
         };
+
+        if (declaration.Fields == null)
+        {
+            declaration.Fields = new[] { field };
+            return declaration;
+        }
 
         declaration.Fields = declaration.Fields.Concat(new[] { field })
                                         .ToArray();

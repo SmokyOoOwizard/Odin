@@ -19,6 +19,11 @@ public class ComponentBuilder<T, TState> where T : IComponent where TState : str
     {
         ComponentDeclaration = State.Add<T>(ComponentDeclaration);
     }
+    
+    internal void UpdateState(TState state)
+    {
+        State = state;
+    }
 
     public void Build()
     {

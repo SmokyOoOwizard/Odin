@@ -14,7 +14,10 @@ public static class ComponentFieldDeclarationStateExtensions
 
         var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
 
-        newBuilder.State.Name = name;
+        var state = newBuilder.State;
+        state.Name = name;
+
+        newBuilder.UpdateState(state);
 
         return newBuilder;
     }
@@ -23,13 +26,12 @@ public static class ComponentFieldDeclarationStateExtensions
         this ComponentBuilder<T, ComponentFieldDeclarationState> builder
     ) where T : IComponent
     {
-        builder.CompleteState();
+        var state = builder.State;
+        state.IsIndex = true;
+        
+        builder.UpdateState(state);
 
-        var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
-
-        newBuilder.State.IsIndex = true;
-
-        return newBuilder;
+        return builder;
     }
 
     public static ComponentBuilder<T, ComponentFieldDeclarationState> Collection<T>(
@@ -37,13 +39,12 @@ public static class ComponentFieldDeclarationStateExtensions
         ECollectionType type
     ) where T : IComponent
     {
-        builder.CompleteState();
+        var state = builder.State;
+        state.CollectionType = type;
+        
+        builder.UpdateState(state);
 
-        var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
-
-        newBuilder.State.CollectionType = type;
-
-        return newBuilder;
+        return builder;
     }
 
     public static ComponentBuilder<T, ComponentFieldDeclarationState> Type<T>(
@@ -51,13 +52,12 @@ public static class ComponentFieldDeclarationStateExtensions
         EFieldType type
     ) where T : IComponent
     {
-        builder.CompleteState();
+        var state = builder.State;
+        state.FieldType = type;
+        
+        builder.UpdateState(state);
 
-        var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
-
-        newBuilder.State.FieldType = type;
-
-        return newBuilder;
+        return builder;
     }
 
     public static ComponentBuilder<T, ComponentFieldDeclarationState> Offset<T>(
@@ -65,12 +65,11 @@ public static class ComponentFieldDeclarationStateExtensions
         int offset
     ) where T : IComponent
     {
-        builder.CompleteState();
+        var state = builder.State;
+        state.Offset = offset;
+        
+        builder.UpdateState(state);
 
-        var newBuilder = builder.NewState<ComponentFieldDeclarationState>();
-
-        newBuilder.State.Offset = offset;
-
-        return newBuilder;
+        return builder;
     }
 }

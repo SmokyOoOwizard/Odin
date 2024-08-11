@@ -24,7 +24,7 @@ public static class ComponentDeclarations
         var existsType = AppDomain.CurrentDomain
                                   .GetAssemblies()
                                   .SelectMany(s => s.GetTypes())
-                                  .Where(p => type.IsAssignableFrom(p) && p.IsClass);
+                                  .Where(p => type.IsAssignableFrom(p) && p is { IsClass: true, IsAbstract: false });
 
         foreach (var declarations in existsType)
         {
