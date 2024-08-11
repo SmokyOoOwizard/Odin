@@ -76,7 +76,9 @@ public class SqliteEntityRepository : IEntityRepository
     public IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default)
     {
         var query = $"SELECT entityId FROM entities WHERE contextId = {_contextId.MapToLong()};";
-        return new SqliteEntitiesCollection(_connection, query);
+        
+        
+        return new SqliteEntitiesCollection(_connection, query, _contextId, this, changes ?? this);
     }
 
     public void Replace<T>(Entity entity, T? component) where T : IComponent
