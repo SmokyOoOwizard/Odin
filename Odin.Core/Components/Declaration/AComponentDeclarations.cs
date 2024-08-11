@@ -9,6 +9,9 @@ public abstract class AComponentDeclarations : IComponentDeclarations
     // key - component id, value - component declaration
     private readonly Dictionary<ulong, ComponentDeclaration> _componentDeclarations = new();
 
+    // key - component name, value - component id
+    private readonly Dictionary<string, ulong> _componentNames = new();
+
     public AComponentDeclarations()
     {
         // ReSharper disable once VirtualMemberCallInConstructor
@@ -19,7 +22,14 @@ public abstract class AComponentDeclarations : IComponentDeclarations
 
     public ulong? GetComponentTypeId<TComponent>() where TComponent : IComponent
     {
-        throw new System.NotImplementedException();
+        var componentName = typeof(TComponent).FullName;
+        if (string.IsNullOrWhiteSpace(componentName))
+            return null;
+
+        if (!_componentNames.TryGetValue(componentName, out var componentTypeId))
+            return null;
+
+        return componentTypeId;
     }
 
     public bool TryGet(ulong componentTypeId, out ComponentDeclaration componentDeclaration)
@@ -27,7 +37,8 @@ public abstract class AComponentDeclarations : IComponentDeclarations
         return _componentDeclarations.TryGetValue(componentTypeId, out componentDeclaration);
     }
 
-    protected ComponentBuilder<TComponent, ComponentDeclarationState> Component<TComponent>() where TComponent : IComponent
+    protected ComponentBuilder<TComponent, ComponentDeclarationState> Component<TComponent>()
+        where TComponent : IComponent
     {
         return new ComponentBuilder<TComponent, ComponentDeclarationState>(AddComponentDescription);
     }
@@ -35,5 +46,7 @@ public abstract class AComponentDeclarations : IComponentDeclarations
     protected void AddComponentDescription(ComponentDeclaration componentDeclaration)
     {
         _componentDeclarations[componentDeclaration.Id] = componentDeclaration;
+
+        _componentNames[componentDeclaration.Name] = componentDeclaration.Id;
     }
 }
