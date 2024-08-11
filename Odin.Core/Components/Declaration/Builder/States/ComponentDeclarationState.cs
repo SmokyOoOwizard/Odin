@@ -13,6 +13,7 @@ public struct ComponentDeclarationState : IComponentBuilderState
         declaration.Name = Name ?? typeof(T).FullName ?? throw new ArgumentNullException(nameof(Name));
         declaration.Id = Id != 0 ? Id : throw new ArgumentNullException(nameof(Id));
         declaration.Size = Size;
+        declaration.Type = typeof(T);
         return declaration;
     }
 }

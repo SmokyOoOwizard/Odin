@@ -20,6 +20,11 @@ public abstract class AComponentDeclarations : IComponentDeclarations
 
     protected abstract void Configure();
 
+    public IEnumerable<ComponentDeclaration> GetComponentDeclarations()
+    {
+        return _componentDeclarations.Values;
+    }
+
     public ulong? GetComponentTypeId<TComponent>() where TComponent : IComponent
     {
         var componentName = typeof(TComponent).FullName;

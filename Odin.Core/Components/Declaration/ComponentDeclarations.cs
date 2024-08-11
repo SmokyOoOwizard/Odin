@@ -4,11 +4,18 @@ namespace Odin.Core.Components.Declaration;
 
 public static class ComponentDeclarations
 {
-    private static readonly List<IComponentDeclarations> _componentDeclarations = new();
+    private static readonly Dictionary<ulong, ComponentDeclaration> Components = new();
+
+    private static readonly Dictionary<string, ulong> ComponentNames = new();
 
     static ComponentDeclarations()
     {
         Reload();
+    }
+
+    public static IEnumerable<ComponentDeclaration> GetComponentDeclarations()
+    {
+        return Components.Values;
     }
 
     public static void Reload()
@@ -23,33 +30,32 @@ public static class ComponentDeclarations
         {
             var instance = (IComponentDeclarations)Activator.CreateInstance(declarations)!;
 
-            _componentDeclarations.Add(instance);
+            foreach (var declaration in instance.GetComponentDeclarations())
+            {
+                if (Components.ContainsKey(declaration.Id))
+                    throw new Exception($"Component with id {declaration.Id} already exists");
+
+                Components[declaration.Id] = declaration;
+
+                ComponentNames[declaration.Name] = declaration.Id;
+            }
         }
     }
 
-
     public static ulong? GetComponentTypeId<TComponent>() where TComponent : IComponent
     {
-        foreach (var declaration in _componentDeclarations)
-        {
-            var componentTypeId = declaration.GetComponentTypeId<TComponent>();
-            if (componentTypeId.HasValue)
-                return componentTypeId;
-        }
+        var componentName = typeof(TComponent).FullName;
+        if (string.IsNullOrWhiteSpace(componentName))
+            return null;
 
-        return null;
+        if (!ComponentNames.TryGetValue(componentName, out var componentTypeId))
+            return null;
+
+        return componentTypeId;
     }
 
     public static bool TryGet(ulong componentTypeId, out ComponentDeclaration componentDeclaration)
     {
-        componentDeclaration = default;
-
-        foreach (var declaration in _componentDeclarations)
-        {
-            if (declaration.TryGet(componentTypeId, out componentDeclaration))
-                return true;
-        }
-
-        return false;
+        return Components.TryGetValue(componentTypeId, out componentDeclaration);
     }
 }
