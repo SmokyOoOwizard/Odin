@@ -17,6 +17,10 @@ internal class SqliteCollector : IEntityCollector
     public string Name { get; }
     public ulong MatcherId { get; }
 
+    private bool _autoClear = true;
+    private bool _wasUse;
+    private readonly long _generation;
+
     public SqliteCollector(
         SqliteConnection connection,
         ulong contextId,
@@ -32,19 +36,39 @@ internal class SqliteCollector : IEntityCollector
         _contextId = contextId;
         _storage = storage;
         _changes = changes;
+
+        _generation = SqlCollectorsUtils.GetCollectorGeneration(_connection, _contextId, Name);
+    }
+
+    public void SetAutoClear(bool enable)
+    {
+        if (_wasUse)
+            throw new Exception(); // TODO
+
+        _autoClear = enable;
     }
 
     public IEntitiesCollection GetEntities()
     {
-        var generation = SqlCollectorsUtils.IncreaseCollectorGeneration(_connection, _contextId, Name);
-        generation--;
-        
+        _wasUse = true;
+
         var tableName = SqlCollectorsUtils.GetTableName(_contextId, Name);
-        
-        var query = $"SELECT entityId FROM {tableName}; WHERE generation = {generation}";
+
+        if (_autoClear)
+            SqlCollectorsUtils.IncreaseCollectorGeneration(_connection, _contextId, Name);
+
+        var query = $"SELECT entityId FROM {tableName}; WHERE generation = {_generation}";
 
         var collection = new SqliteEntitiesCollection(_connection, query, _contextId, _storage, _changes);
 
         return collection;
+    }
+
+    public void Dispose()
+    {
+        if (!_autoClear)
+            return;
+
+        SqlCollectorsUtils.ClearCollector(_connection, _contextId, Name, _generation);
     }
 }

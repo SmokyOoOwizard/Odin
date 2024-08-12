@@ -25,6 +25,19 @@ internal static class SqlCollectorsUtils
         return reader.GetInt64(0);
     }
     
+    public static long GetCollectorGeneration(SqliteConnection connection, ulong contextId, string name)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = $"SELECT generation FROM collectors WHERE contextId = {contextId.MapToLong()} AND name = '{name}' RETURNING generation;";
+
+        using var reader = command.ExecuteReader();
+
+        if (!reader.Read())
+            throw new Exception(); // TODO
+
+        return reader.GetInt64(0);
+    }
+    
     public static IEnumerable<ulong> GetEntitiesFromCollector(SqliteConnection connection, ulong contextId, string name)
     {
         if (!CollectorExists(connection, contextId, name))
@@ -56,7 +69,16 @@ internal static class SqlCollectorsUtils
         command.ExecuteNonQuery();
     }
 
-    public static void ClearCollector(SqliteConnection connection, ulong contextId, string name)
+    public static void ClearCollector(SqliteConnection connection, ulong contextId, string name, long generation)
+    {
+        using var command = connection.CreateCommand();
+        var tableName = GetTableName(contextId, name);
+
+        command.CommandText = $"DELETE FROM {tableName} WHERE generation = {generation};";
+        command.ExecuteNonQuery();
+    }
+    
+    public static void ClearCollectorTotal(SqliteConnection connection, ulong contextId, string name)
     {
         using var command = connection.CreateCommand();
         var tableName = GetTableName(contextId, name);

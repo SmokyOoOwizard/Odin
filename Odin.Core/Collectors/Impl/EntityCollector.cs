@@ -33,12 +33,16 @@ internal class EntityCollector : IEntityCollector
         _entityQueue.Enqueue(entityId);
     }
 
+    public void SetAutoClear(bool enable)
+    {
+    }
+
     public IEntitiesCollection GetEntities()
     {
         var ids = _entityQueue.ToArray();
         _entityQueue.Clear();
         _all.Clear();
-        
+
         // TODO use other changes repository
         return _inMemoryEntitiesRepository.GetEntities(ids);
     }
@@ -47,5 +51,9 @@ internal class EntityCollector : IEntityCollector
     {
         _entityQueue.Clear();
         _all.Clear();
+    }
+
+    public void Dispose()
+    {
     }
 }
