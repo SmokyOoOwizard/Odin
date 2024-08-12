@@ -28,7 +28,7 @@ internal static class SqlCollectorsUtils
     public static long GetCollectorGeneration(SqliteConnection connection, ulong contextId, string name)
     {
         using var command = connection.CreateCommand();
-        command.CommandText = $"SELECT generation FROM collectors WHERE contextId = {contextId.MapToLong()} AND name = '{name}' RETURNING generation;";
+        command.CommandText = $"SELECT generation FROM collectors WHERE contextId = {contextId.MapToLong()} AND name = '{name}';";
 
         using var reader = command.ExecuteReader();
 
