@@ -133,7 +133,7 @@ public class SqliteEntityRepository : IEntityRepository
 
         SqlCollectorsUtils.CreateCollector(_connection, _contextId, name, matcherId);
 
-        var collector = _collectorsCache[name] = new SqliteCollector(_connection, _contextId, name, matcherId);
+        var collector = _collectorsCache[name] = new SqliteCollector(_connection, _contextId, name, matcherId, this, this);
 
         return collector;
     }
