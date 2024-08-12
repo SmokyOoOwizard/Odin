@@ -36,8 +36,12 @@ internal class SqliteCollector : IEntityCollector
 
     public IEntitiesCollection GetEntities()
     {
+        var generation = SqlCollectorsUtils.IncreaseCollectorGeneration(_connection, _contextId, Name);
+        generation--;
+        
         var tableName = SqlCollectorsUtils.GetTableName(_contextId, Name);
-        var query = $"SELECT entityId FROM {tableName};";
+        
+        var query = $"SELECT entityId FROM {tableName}; WHERE generation = {generation}";
 
         var collection = new SqliteEntitiesCollection(_connection, query, _contextId, _storage, _changes);
 
