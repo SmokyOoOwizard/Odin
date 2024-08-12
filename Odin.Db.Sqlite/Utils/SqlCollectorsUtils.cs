@@ -55,6 +55,7 @@ internal static class SqlCollectorsUtils
         using var command = connection.CreateCommand();
         var tableName = GetTableName(contextId, name);
 
+        // todo. wtf? check collectors table for row
         command.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
         using var reader = command.ExecuteReader();
 
