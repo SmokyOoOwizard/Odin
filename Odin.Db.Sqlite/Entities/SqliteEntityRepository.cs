@@ -76,8 +76,8 @@ public class SqliteEntityRepository : IEntityRepository
     public IEntitiesCollection GetEntities(IEntityComponentsRepository? changes = default)
     {
         var query = $"SELECT entityId FROM entities WHERE contextId = {_contextId.MapToLong()};";
-        
-        
+
+
         return new SqliteEntitiesCollection(_connection, query, _contextId, this, changes ?? this);
     }
 
@@ -133,7 +133,8 @@ public class SqliteEntityRepository : IEntityRepository
 
         SqlCollectorsUtils.CreateCollector(_connection, _contextId, name, matcherId);
 
-        var collector = _collectorsCache[name] = new SqliteCollector(_connection, _contextId, name, matcherId, this, this);
+        var collector = _collectorsCache[name] =
+            new SqliteCollector(_connection, _contextId, name, matcherId, this, this);
 
         return collector;
     }
@@ -225,6 +226,19 @@ public class SqliteEntityRepository : IEntityRepository
                 continue;
             }
 
+            var ownEntity = new Entity(entity.Id, this, entity.Changes);
+
+            foreach (var matcher in matchers)
+            {
+                if (matcher.filter(ownEntity))
+                {
+                    foreach (var collector in matcher.collectors)
+                    {
+                        SqlCollectorsUtils.AddEntityToCollector(_connection, _contextId, collector, id);
+                    }
+                }
+            }
+
             foreach (var component in changes)
             {
                 var old = reader.Read(_connection, id, _contextId, component.TypeId);
@@ -238,19 +252,6 @@ public class SqliteEntityRepository : IEntityRepository
                     deleter.Delete(_connection, id, _contextId, component.TypeId, true);
                 else
                     writer.Write(_connection, id, _contextId, old, true);
-            }
-
-            var ownEntity = new Entity(entity.Id, this, entity.Changes);
-
-            foreach (var matcher in matchers)
-            {
-                if (matcher.filter(ownEntity))
-                {
-                    foreach (var collector in matcher.collectors)
-                    {
-                        SqlCollectorsUtils.AddEntityToCollector(_connection, _contextId, collector, id);
-                    }
-                }
             }
         }
     }

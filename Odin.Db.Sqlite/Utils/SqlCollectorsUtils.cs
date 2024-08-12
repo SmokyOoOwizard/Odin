@@ -12,7 +12,7 @@ internal static class SqlCollectorsUtils
         return tableName;
     }
 
-    public static long IncreaseCollectorGeneration(SqliteConnection connection, ulong contextId, string name)
+    public static long? IncreaseCollectorGeneration(SqliteConnection connection, ulong contextId, string name)
     {
         using var command = connection.CreateCommand();
         command.CommandText = $"UPDATE collectors SET generation = generation + 1 WHERE contextId = {contextId.MapToLong()} AND name = '{name}' RETURNING generation;";
@@ -20,7 +20,7 @@ internal static class SqlCollectorsUtils
         using var reader = command.ExecuteReader();
 
         if (!reader.Read())
-            throw new Exception(); // TODO
+            return null;
 
         return reader.GetInt64(0);
     }
@@ -71,6 +71,9 @@ internal static class SqlCollectorsUtils
 
     public static void ClearCollector(SqliteConnection connection, ulong contextId, string name, long generation)
     {
+        if (!CollectorExists(connection, contextId, name))
+            return;
+        
         using var command = connection.CreateCommand();
         var tableName = GetTableName(contextId, name);
 
@@ -80,6 +83,9 @@ internal static class SqlCollectorsUtils
     
     public static void ClearCollectorTotal(SqliteConnection connection, ulong contextId, string name)
     {
+        if (!CollectorExists(connection, contextId, name))
+            return;
+        
         using var command = connection.CreateCommand();
         var tableName = GetTableName(contextId, name);
 

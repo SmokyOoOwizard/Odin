@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Odin.Core.Collectors;
 using Odin.Core.Entities.Collections;
+using Odin.Core.Entities.Collections.Impl;
 using Odin.Core.Repositories.Entities;
 using Odin.Db.Sqlite.Entities.Collections;
 using Odin.Db.Sqlite.Utils;
@@ -52,11 +53,14 @@ internal class SqliteCollector : IEntityCollector
     {
         _wasUse = true;
 
-        var tableName = SqlCollectorsUtils.GetTableName(_contextId, Name);
+        if (!SqlCollectorsUtils.CollectorExists(_connection, _contextId, Name))
+            return new InMemoryEntitiesCollection();
+        
 
         if (_autoClear)
             SqlCollectorsUtils.IncreaseCollectorGeneration(_connection, _contextId, Name);
 
+        var tableName = SqlCollectorsUtils.GetTableName(_contextId, Name);
         var query = $"SELECT entityId FROM {tableName}; WHERE generation = {_generation}";
 
         var collection = new SqliteEntitiesCollection(_connection, query, _contextId, _storage, _changes);
