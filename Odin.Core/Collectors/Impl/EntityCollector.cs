@@ -35,6 +35,7 @@ internal class EntityCollector : IEntityCollector
 
     public void SetAutoClear(bool enable)
     {
+        // TODO
     }
 
     public IEntitiesCollection GetEntities()
@@ -55,5 +56,6 @@ internal class EntityCollector : IEntityCollector
 
     public void Dispose()
     {
+        // TODO
     }
 }
