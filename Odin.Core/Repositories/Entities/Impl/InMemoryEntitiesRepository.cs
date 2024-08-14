@@ -15,9 +15,6 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
 {
     private readonly ulong _destroyedId = TypeComponentUtils.GetComponentTypeId<DestroyedComponent>();
 
-    // key - matcher id, value - (name, collector)
-    private readonly Dictionary<ulong, Dictionary<string, EntityCollector>> _collectors = new();
-
     // key - collector name, value - matcher id
     private readonly Dictionary<string, ulong> _collectorsToMatchers = new();
 
@@ -33,12 +30,12 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                                   .GetAssemblies()
                                   .SelectMany(s => s.GetTypes())
                                   .Where(p => type.IsAssignableFrom(p) && p.IsClass);
-        
-        var indexes = existsType.Select(c=> (IInMemoryIndexModule)Activator.CreateInstance(c)!).ToArray();
+
+        var indexes = existsType.Select(c => (IInMemoryIndexModule)Activator.CreateInstance(c)!).ToArray();
         foreach (var index in indexes)
         {
             _indexes[index.GetComponentTypeId()] = index;
-            
+
             // todo change changes arg!
             index.SetRepositories(this, this);
         }
@@ -46,46 +43,25 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
 
     public IEntityCollector CreateOrGetCollector<T>(string name) where T : AReactiveComponentMatcher
     {
-        if (_collectorsToMatchers.TryGetValue(name, out var matcherId)
-         && _collectors.TryGetValue(matcherId, out var collectors)
-         && collectors.TryGetValue(name, out var collector))
+        if (!_collectorsToMatchers.TryGetValue(name, out var matcherId))
         {
-            return collector;
+            matcherId = MatchersRepository.GetMatcherId<T>();
+
+            _collectorsToMatchers[name] = matcherId;
+            
+            InMemoryEntityCollectors.AddCollector(ContextId, name, matcherId);
         }
 
-        matcherId = MatchersRepository.GetMatcherId<T>();
-        if (!_collectors.TryGetValue(matcherId, out collectors))
-        {
-            collectors = _collectors[matcherId] = new Dictionary<string, EntityCollector>();
-        }
-
-        if (collectors.ContainsKey(name))
-            throw new InvalidOperationException("Collector already exists.");
-
-        collector = new EntityCollector(name, matcherId, this);
-
-        collectors[name] = collector;
-
-        _collectorsToMatchers[name] = matcherId;
-
-        return collector;
+        return new InMemoryEntityCollector(ContextId, name, matcherId, this);
     }
 
 
     public void DeleteCollector(string name)
     {
-        if (!_collectorsToMatchers.TryGetValue(name, out var matcherId))
+        if (!_collectorsToMatchers.TryGetValue(name, out _))
             return;
 
-        var collectors = _collectors[matcherId];
-
-        var collector = collectors[name];
-        collectors.Remove(name);
-
-        collector.Clear();
-
-        if (collectors.Count == 0)
-            _collectors.Remove(matcherId);
+        InMemoryEntityCollectors.DeleteCollector(ContextId, name);
 
         _collectorsToMatchers.Remove(name);
     }
@@ -138,10 +114,10 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
     {
         lock (Components)
         {
-            var matchers = _collectors.Select(c => new
+            var matchers = _collectorsToMatchers.Select(c => new
             {
-                id = c.Key,
-                filter = MatchersRepository.GetFilter(c.Key)
+                id = c.Value,
+                filter = MatchersRepository.GetFilter(c.Value)
             }).ToArray();
 
             foreach (var entity in entities)
@@ -167,14 +143,7 @@ public class InMemoryEntitiesRepository : AInMemoryEntitiesRepository, IEntityRe
                 foreach (var matcher in matchers)
                 {
                     if (matcher.filter(ownEntity))
-                    {
-                        var collectors = _collectors[matcher.id];
-
-                        foreach (var (_, collector) in collectors)
-                        {
-                            collector.Add(id);
-                        }
-                    }
+                        InMemoryEntityCollectors.AddEntity(matcher.id, entity.Id);
                 }
 
                 if (!Components.TryGetValue(id, out var components))

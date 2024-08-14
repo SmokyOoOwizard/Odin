@@ -6,9 +6,14 @@ namespace Odin.Core.Entities.Collections.Impl;
 
 public class InMemoryEntitiesCollection : IEntitiesCollection
 {
-    private readonly Entity[] _entities;
-    
-    public InMemoryEntitiesCollection(params Entity[] entities)
+    private readonly IEnumerable<Entity> _entities;
+
+    public InMemoryEntitiesCollection()
+    {
+        _entities = Array.Empty<Entity>();
+    }
+
+    public InMemoryEntitiesCollection(IEnumerable<Entity> entities)
     {
         _entities = entities;
     }
